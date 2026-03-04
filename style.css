@@ -1,6 +1,6 @@
 /* ============================================================
    DIRETORIA DE REGULAÇÃO DO ACESSO – DASHBOARD
-   style.css – v3.8 (rosca maior, consolidado normal)
+   style.css – v3.9 (rosca e consolidado proporcionais)
    ============================================================ */
 
 :root {
@@ -383,8 +383,9 @@ body {
   flex: 1; position: relative; min-height: 260px;
 }
 
+/* CORRIGIDO: era 380px — reduzido para 260px para ficar proporcional aos demais */
 .chart-body-doughnut {
-  flex: 1; position: relative; min-height: 380px; /* ROSCA MAIOR */
+  flex: 1; position: relative; min-height: 260px;
 }
 
 .chart-body-tall { min-height: 400px; }
@@ -540,7 +541,8 @@ body {
   .header-actions { gap: 8px; }
   .btn { padding: 8px 14px; font-size: 0.8rem; }
   .chart-body-tall { min-height: 300px; }
-  .chart-body-doughnut { min-height: 300px; }
+  /* CORRIGIDO: era 300px — alinhado com chart-body padrão */
+  .chart-body-doughnut { min-height: 260px; }
 }
 
 @media (max-width: 480px) {
