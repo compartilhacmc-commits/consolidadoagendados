@@ -1,6 +1,6 @@
 /* ============================================================
    DIRETORIA DE REGULAÇÃO DO ACESSO – DASHBOARD
-   script.js – v3.8 (rosca maior com legendas dentro, consolidado normal)
+   script.js – v3.9 (rosca e consolidado proporcionais)
    ============================================================ */
 
 'use strict';
@@ -472,7 +472,6 @@ function applyFilters() {
   const situacao     = document.getElementById('filterSituacao')?.value     || '';
   const dataCriacaoSelecionada = window._fpInicio ? window._fpInicio.selectedDates[0] : null;
 
-  // Converter situação em array se tiver múltiplos valores separados por vírgula
   const situacoesPermitidas = situacao ? situacao.split(',') : [];
 
   filteredData = allData.filter(r => {
@@ -483,10 +482,7 @@ function applyFilters() {
     if (mes          && r.mesAgendamento     !== mes)           return false;
     if (unidade      && r.unidadeSolicitante !== unidade)       return false;
     if (distrito     && r.distrito           !== distrito)      return false;
-    
-    // Filtro de situação com suporte a múltiplos valores
     if (situacoesPermitidas.length > 0 && !situacoesPermitidas.includes(r.situacao)) return false;
-    
     if (dataCriacaoSelecionada) {
       if (!r.dataCriacaoParsed) return false;
       if (!isSameDay(r.dataCriacaoParsed, dataCriacaoSelecionada)) return false;
@@ -512,15 +508,13 @@ function clearFilters() {
 }
 
 // ============================================================
-// KPIS (cards respeitam os filtros atuais)
+// KPIS
 // ============================================================
 function updateKPIs() {
   const rec = filteredData.filter(r => r.situacao === 'REC').length;
   const fal = filteredData.filter(r => r.situacao === 'FAL').length;
   const can = filteredData.filter(r => r.situacao === 'CAN').length;
   const tra = filteredData.filter(r => r.situacao === 'TRA').length;
-  
-  // Agendados = REC + FAL (dos dados filtrados atualmente)
   const agendados = rec + fal;
 
   animateCount('kpiAgendados', agendados);
@@ -824,7 +818,8 @@ function renderChartPrestador() {
 }
 
 // ============================================================
-// GRÁFICO 5: Distribuição por Mês – ROSCA (TAMANHO MAIOR, LEGENDAS DENTRO)
+// GRÁFICO 5: Distribuição por Mês – ROSCA
+// CORRIGIDO: tamanho reduzido para ficar proporcional aos demais gráficos
 // ============================================================
 function renderChartMes() {
   const ctx = document.getElementById('chartMes')?.getContext('2d');
@@ -854,25 +849,27 @@ function renderChartMes() {
         data,
         backgroundColor: colors,
         borderColor: '#ffffff',
-        borderWidth: 4,
-        hoverOffset: 15,
+        borderWidth: 3,        // CORRIGIDO: era 4 — levemente reduzido
+        hoverOffset: 10,       // CORRIGIDO: era 15 — reduzido proporcionalmente
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '60%',
+      cutout: '58%',           // CORRIGIDO: era '60%' — ligeiro ajuste
       plugins: {
         legend: {
           display: true,
           position: 'right',
           labels: {
-            font: { family: 'Inter', size: 12, weight: '600' },
+            // CORRIGIDO: fonte reduzida de 12 → 10 para caber no container menor
+            font: { family: 'Inter', size: 10, weight: '600' },
             color: '#1e3a5f',
-            padding: 15,
+            // CORRIGIDO: padding reduzido de 15 → 8 para caber no container menor
+            padding: 8,
             usePointStyle: true,
             pointStyle: 'circle',
-            pointStyleWidth: 12,
+            pointStyleWidth: 10, // CORRIGIDO: era 12
             generateLabels(chart) {
               const ds = chart.data.datasets[0];
               return chart.data.labels.map((label, i) => {
@@ -907,10 +904,11 @@ function renderChartMes() {
         datalabels: {
           display: true,
           backgroundColor: 'rgba(255,255,255,0.9)',
-          borderRadius: 12,
-          padding: { top: 4, bottom: 4, left: 8, right: 8 },
+          borderRadius: 10,    // CORRIGIDO: era 12
+          padding: { top: 3, bottom: 3, left: 6, right: 6 }, // CORRIGIDO: reduzido
           color: '#1e3a5f',
-          font: { family: 'Inter', size: 11, weight: '700' },
+          // CORRIGIDO: fonte reduzida de 11 → 10
+          font: { family: 'Inter', size: 10, weight: '700' },
           formatter: (value, context) => {
             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
             if (percentage >= 5) {
@@ -928,7 +926,8 @@ function renderChartMes() {
           label: 'Total',
           valueColor: '#1e3a5f',
           labelColor: '#7a8fa6',
-          fontSize: 24
+          // CORRIGIDO: fontSize reduzido de 24 → 18 para o container menor
+          fontSize: 18
         }
       }
     }
@@ -1009,8 +1008,8 @@ function renderChartConsolidadoSituacao() {
         },
         y: {
           beginAtZero: true,
-          ticks: { 
-            font: { family: 'Inter', size: 10 }, 
+          ticks: {
+            font: { family: 'Inter', size: 10 },
             color: '#7a8fa6',
             callback: function(val) {
               return val >= 1000 ? (val/1000).toFixed(0) + 'k' : val;
@@ -1034,7 +1033,6 @@ function renderChartAbsenteismoEsp() {
   filteredData.forEach(r => {
     const key = r.cbo || '–';
     if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0 };
-    
     if (r.situacao === 'FAL') map[key].fal++;
     else if (r.situacao === 'REC') map[key].rec++;
     else if (r.situacao === 'CAN') map[key].can++;
@@ -1129,7 +1127,6 @@ function renderChartAbsenteismoDist() {
   filteredData.forEach(r => {
     const key = r.distrito || 'OUTROS';
     if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0 };
-    
     if (r.situacao === 'FAL') map[key].fal++;
     else if (r.situacao === 'REC') map[key].rec++;
     else if (r.situacao === 'CAN') map[key].can++;
