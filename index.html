@@ -26,12 +26,10 @@
         </div>
         <div class="header-titles">
           <h1 class="header-main">DIRETORIA DE REGULAÇÃO DO ACESSO</h1>
-          <h2 class="header-sub">CMC - Consolidado - Agendamentos/2026</h2>
-          <div class="h-meta">
-           Superintendente: <b style="color:#bfdbfe">Yara Ariane M.S.Souza</b>
-            &nbsp;•&nbsp; Diretora: <b style="color:#bfdbfe">Paloma Morais</b>
+          <h2 class="header-sub">CONSOLIDADO/AGENDAMENTOS 2026</h2>
+          <h3 class="header-sub2">CENTRAL DE MARCAÇÃO DE CONSULTAS</h3>
           <p class="header-ref">Referência do Setor: <strong>Enfermeira Giovanna</strong></p>
-          <p class="header-ref">Página criada por <strong>Ana P. A. Silva - Matric. 201704</strong> | Assistente Adm. Diretoria de Regulação do Acesso</p>
+          <p class="header-creator">Página criada por <strong>Ana P. A. Silva</strong> – Matric. 201704 | Assistente Adm. Diretoria de Regulação do Acesso</p>
         </div>
       </div>
       <div class="header-actions">
@@ -250,6 +248,39 @@
           <canvas id="chartPrestador"></canvas>
         </div>
       </div>
+    </section>
+
+    <!-- ===== GRÁFICOS LINHA 3 – Consolidado por Situação + Rosca (Mês) ===== -->
+    <section class="charts-row charts-row-equal">
+
+      <!-- Consolidado por Situação (altura normal) -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <div class="chart-dot dot-red"></div>
+            <h4>Consolidado por Situação</h4>
+          </div>
+          <span class="chart-badge">Barras Verticais</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="chartConsolidadoSituacao"></canvas>
+        </div>
+      </div>
+
+      <!-- Rosca por mês (TAMANHO MAIOR) -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <div class="chart-dot dot-teal"></div>
+            <h4>Distribuição de Agendamentos por Mês</h4>
+          </div>
+          <span class="chart-badge">Rosca</span>
+        </div>
+        <div class="chart-body chart-body-doughnut">
+          <canvas id="chartMes"></canvas>
+        </div>
+      </div>
+
     </section>
 
     <!-- ===== GRÁFICOS LINHA 4 – % Absenteísmo por Especialidade + Distrito ===== -->
