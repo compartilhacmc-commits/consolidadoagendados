@@ -817,213 +817,9 @@ function renderChartPrestador() {
   });
 }
 
-// ============================================================
-// GRÁFICO 5: Distribuição por Mês – ROSCA
-// CORRIGIDO: tamanho reduzido para ficar proporcional aos demais gráficos
-// ============================================================
-function renderChartMes() {
-  const ctx = document.getElementById('chartMes')?.getContext('2d');
-  if (!ctx) return;
-
-  const mesesMap = {};
-  filteredData.forEach(r => {
-    if (!r.dataAgendaParsed || !r.mesAgendamento) return;
-    const d   = r.dataAgendaParsed;
-    const key = d.getFullYear() * 100 + d.getMonth();
-    if (!mesesMap[key]) mesesMap[key] = { label: r.mesAgendamento, count: 0 };
-    mesesMap[key].count++;
-  });
-
-  const sorted = Object.entries(mesesMap).sort((a,b) => +a[0] - +b[0]);
-  const labels = sorted.map(e => e[1].label);
-  const data   = sorted.map(e => e[1].count);
-  const total  = data.reduce((a,b) => a+b, 0);
-  const colors = PALETTE_MONTHS;
-
-  destroyChart(chartMes);
-  chartMes = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: colors,
-        borderColor: '#ffffff',
-        borderWidth: 3,        // CORRIGIDO: era 4 — levemente reduzido
-        hoverOffset: 10,       // CORRIGIDO: era 15 — reduzido proporcionalmente
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '58%',           // CORRIGIDO: era '60%' — ligeiro ajuste
-      plugins: {
-        legend: {
-          display: true,
-          position: 'right',
-          labels: {
-            // CORRIGIDO: fonte reduzida de 12 → 10 para caber no container menor
-            font: { family: 'Inter', size: 10, weight: '600' },
-            color: '#1e3a5f',
-            // CORRIGIDO: padding reduzido de 15 → 8 para caber no container menor
-            padding: 8,
-            usePointStyle: true,
-            pointStyle: 'circle',
-            pointStyleWidth: 10, // CORRIGIDO: era 12
-            generateLabels(chart) {
-              const ds = chart.data.datasets[0];
-              return chart.data.labels.map((label, i) => {
-                const value = ds.data[i];
-                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                return {
-                  text: `${label.split('/')[0]}: ${percentage}% (${fmt(value)})`,
-                  fillStyle: ds.backgroundColor[i],
-                  strokeStyle: ds.backgroundColor[i],
-                  pointStyle: 'circle',
-                  hidden: false,
-                  index: i,
-                  datasetIndex: 0,
-                };
-              });
-            }
-          }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(20,40,68,0.95)',
-          titleFont: { family: 'Inter', size: 13, weight: '700' },
-          bodyFont: { family: 'Inter', size: 12 },
-          padding: 12,
-          cornerRadius: 8,
-          callbacks: {
-            label: (ctx) => {
-              const percentage = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
-              return ` ${ctx.label}: ${fmt(ctx.raw)} (${percentage}%)`;
-            }
-          }
-        },
-        datalabels: {
-          display: true,
-          backgroundColor: 'rgba(255,255,255,0.9)',
-          borderRadius: 10,    // CORRIGIDO: era 12
-          padding: { top: 3, bottom: 3, left: 6, right: 6 }, // CORRIGIDO: reduzido
-          color: '#1e3a5f',
-          // CORRIGIDO: fonte reduzida de 11 → 10
-          font: { family: 'Inter', size: 10, weight: '700' },
-          formatter: (value, context) => {
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-            if (percentage >= 5) {
-              return `${percentage}%`;
-            }
-            return null;
-          },
-          anchor: 'center',
-          align: 'center',
-          offset: 0
-        },
-        centerText: {
-          enabled: true,
-          value: fmt(total),
-          label: 'Total',
-          valueColor: '#1e3a5f',
-          labelColor: '#7a8fa6',
-          // CORRIGIDO: fontSize reduzido de 24 → 18 para o container menor
-          fontSize: 18
-        }
-      }
-    }
-  });
-}
 
 // ============================================================
-// GRÁFICO 6: Consolidado por Situação – Barras Verticais
-// ============================================================
-function renderChartConsolidadoSituacao() {
-  const ctx = document.getElementById('chartConsolidadoSituacao')?.getContext('2d');
-  if (!ctx) return;
-
-  const total = filteredData.length;
-  const sitsOrder = ['AGE','REC','FAL','CAN','TRA'];
-  const sitsData = sitsOrder.map(key => {
-    const count = filteredData.filter(r => r.situacao === key).length;
-    return {
-      key,
-      label:  SITUACAO_COLORS[key].label,
-      count,
-      pct:    total > 0 ? parseFloat((count/total*100).toFixed(1)) : 0,
-      bg:     SITUACAO_COLORS[key].bg,
-      border: SITUACAO_COLORS[key].border,
-    };
-  });
-
-  const labels  = sitsData.map(s => s.label);
-  const data    = sitsData.map(s => s.count);
-  const bgs     = sitsData.map(s => s.bg);
-  const borders = sitsData.map(s => s.border);
-
-  destroyChart(chartConsolidadoSituacao);
-  chartConsolidadoSituacao = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Quantidade',
-        data,
-        backgroundColor: bgs,
-        borderColor:     borders,
-        borderWidth: 2,
-        borderRadius: 10,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          ...TOOLTIP_BASE,
-          callbacks: {
-            label: ctx => {
-              const sd = sitsData[ctx.dataIndex];
-              return [` ${fmt(ctx.raw)} registros`, ` ${sd.pct}% do total`];
-            }
-          }
-        },
-        datalabels: {
-          anchor: 'end',
-          align:  'top',
-          clamp:  true,
-          color:  '#1a2a3a',
-          font: { family: 'Inter', size: 14, weight: '800' },
-          formatter: (val) => {
-            return `${fmt(val)}`;
-          }
-        }
-      },
-      layout: { padding: { top: 40 } },
-      scales: {
-        x: {
-          ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#1e3a5f' },
-          grid: { display: false }
-        },
-        y: {
-          beginAtZero: true,
-          ticks: {
-            font: { family: 'Inter', size: 10 },
-            color: '#7a8fa6',
-            callback: function(val) {
-              return val >= 1000 ? (val/1000).toFixed(0) + 'k' : val;
-            }
-          },
-          grid: { display: false }
-        }
-      }
-    }
-  });
-}
-
-// ============================================================
-// GRÁFICO 7: % Absenteísmo por Especialidade
+// GRÁFICO 5: % Absenteísmo por Especialidade
 // ============================================================
 function renderChartAbsenteismoEsp() {
   const ctx = document.getElementById('chartAbsenteismoEsp')?.getContext('2d');
@@ -1117,7 +913,7 @@ function renderChartAbsenteismoEsp() {
 }
 
 // ============================================================
-// GRÁFICO 8: % Absenteísmo por Distrito
+// GRÁFICO 6: % Absenteísmo por Distrito
 // ============================================================
 function renderChartAbsenteismoDist() {
   const ctx = document.getElementById('chartAbsenteismoDist')?.getContext('2d');
@@ -1203,7 +999,7 @@ function renderChartAbsenteismoDist() {
 }
 
 // ============================================================
-// GRÁFICO 9: % Cancelamentos por Distrito
+// GRÁFICO 7: % Cancelamentos por Distrito
 // ============================================================
 function renderChartCancelamentosDist() {
   const ctx = document.getElementById('chartCancelamentosDist')?.getContext('2d');
@@ -1285,7 +1081,7 @@ function renderChartCancelamentosDist() {
 }
 
 // ============================================================
-// GRÁFICO 10: % Cancelamentos por Especialidade (Barras Horizontais)
+// GRÁFICO 08: % Cancelamentos por Especialidade (Barras Horizontais)
 // ============================================================
 function renderChartCancelamentosEsp() {
   const ctx = document.getElementById('chartCancelamentosEsp')?.getContext('2d');
