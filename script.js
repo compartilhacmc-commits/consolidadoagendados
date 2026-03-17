@@ -1,8 +1,3 @@
-/* ============================================================
-   DIRETORIA DE REGULAÇÃO DO ACESSO – DASHBOARD
-   script.js – v3.8 (rosca maior com legendas dentro, consolidado normal)
-   ============================================================ */
-
 'use strict';
 
 Chart.register(ChartDataLabels);
@@ -169,6 +164,13 @@ const PALETTE_MONTHS = [
   '#00bcd4', '#ff5722', '#8bc34a', '#673ab7'
 ];
 
+// ============================================================
+// PALETA VERDE – gráfico de Situação (Barras Verdes)
+// ============================================================
+const PALETTE_GREEN = [
+  '#1a7a3f', '#27ae60', '#2ecc71', '#52be80', '#76d7c4'
+];
+
 const SITUACAO_COLORS = {
   AGE: { bg: 'rgba(41,128,185,0.85)',  border: '#2980b9', label: 'Agendados (AGE)' },
   REC: { bg: 'rgba(39,174,96,0.85)',   border: '#27ae60', label: 'Recepcionados' },
@@ -201,8 +203,9 @@ let chartDistrito            = null;
 let chartTipoAtendimento     = null;
 let chartEspecialidade       = null;
 let chartPrestador           = null;
-let chartMes                 = null;
-let chartConsolidadoSituacao = null;
+let chartSituacao            = null;
+let chartMeses               = null;
+
 let chartAbsenteismoEsp      = null;
 let chartAbsenteismoDist     = null;
 let chartCancelamentosDist   = null;
@@ -553,8 +556,9 @@ function renderAllCharts() {
   renderChartTipoAtendimento();
   renderChartEspecialidade();
   renderChartPrestador();
-  renderChartMes();
-  renderChartConsolidadoSituacao();
+  renderChartSituacao();
+  renderChartMeses();
+
   renderChartAbsenteismoEsp();
   renderChartAbsenteismoDist();
   renderChartCancelamentosDist();
@@ -824,155 +828,46 @@ function renderChartPrestador() {
 }
 
 // ============================================================
-// GRÁFICO 5: Distribuição por Mês – ROSCA (TAMANHO MAIOR, LEGENDAS DENTRO)
+// GRÁFICO 5: Quantidade de Consultas por Situação (BARRAS VERDES)
 // ============================================================
-function renderChartMes() {
-  const ctx = document.getElementById('chartMes')?.getContext('2d');
+function renderChartSituacao() {
+  const ctx = document.getElementById('chartSituacao')?.getContext('2d');
   if (!ctx) return;
 
-  const mesesMap = {};
-  filteredData.forEach(r => {
-    if (!r.dataAgendaParsed || !r.mesAgendamento) return;
-    const d   = r.dataAgendaParsed;
-    const key = d.getFullYear() * 100 + d.getMonth();
-    if (!mesesMap[key]) mesesMap[key] = { label: r.mesAgendamento, count: 0 };
-    mesesMap[key].count++;
-  });
+  const age = filteredData.filter(r => r.situacao === 'AGE').length;
+  const rec = filteredData.filter(r => r.situacao === 'REC').length;
+  const fal = filteredData.filter(r => r.situacao === 'FAL').length;
+  const can = filteredData.filter(r => r.situacao === 'CAN').length;
+  const tra = filteredData.filter(r => r.situacao === 'TRA').length;
 
-  const sorted = Object.entries(mesesMap).sort((a,b) => +a[0] - +b[0]);
-  const labels = sorted.map(e => e[1].label);
-  const data   = sorted.map(e => e[1].count);
-  const total  = data.reduce((a,b) => a+b, 0);
-  const colors = PALETTE_MONTHS;
+  const labels = ['Agendados (AGE)', 'Recepcionados (REC)', 'Faltosos (FAL)', 'Cancelados (CAN)', 'Transferidos (TRA)'];
+  const data = [age, rec, fal, can, tra];
+  const total = data.reduce((a,b) => a+b, 0);
 
-  destroyChart(chartMes);
-  chartMes = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: colors,
-        borderColor: '#ffffff',
-        borderWidth: 4,
-        hoverOffset: 15,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '60%',
-      plugins: {
-        legend: {
-          display: true,
-          position: 'right',
-          labels: {
-            font: { family: 'Inter', size: 12, weight: '600' },
-            color: '#1e3a5f',
-            padding: 15,
-            usePointStyle: true,
-            pointStyle: 'circle',
-            pointStyleWidth: 12,
-            generateLabels(chart) {
-              const ds = chart.data.datasets[0];
-              return chart.data.labels.map((label, i) => {
-                const value = ds.data[i];
-                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                return {
-                  text: `${label.split('/')[0]}: ${percentage}% (${fmt(value)})`,
-                  fillStyle: ds.backgroundColor[i],
-                  strokeStyle: ds.backgroundColor[i],
-                  pointStyle: 'circle',
-                  hidden: false,
-                  index: i,
-                  datasetIndex: 0,
-                };
-              });
-            }
-          }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(20,40,68,0.95)',
-          titleFont: { family: 'Inter', size: 13, weight: '700' },
-          bodyFont: { family: 'Inter', size: 12 },
-          padding: 12,
-          cornerRadius: 8,
-          callbacks: {
-            label: (ctx) => {
-              const percentage = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
-              return ` ${ctx.label}: ${fmt(ctx.raw)} (${percentage}%)`;
-            }
-          }
-        },
-        datalabels: {
-          display: true,
-          backgroundColor: 'rgba(255,255,255,0.9)',
-          borderRadius: 12,
-          padding: { top: 4, bottom: 4, left: 8, right: 8 },
-          color: '#1e3a5f',
-          font: { family: 'Inter', size: 11, weight: '700' },
-          formatter: (value, context) => {
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-            if (percentage >= 5) {
-              return `${percentage}%`;
-            }
-            return null;
-          },
-          anchor: 'center',
-          align: 'center',
-          offset: 0
-        },
-        centerText: {
-          enabled: true,
-          value: fmt(total),
-          label: 'Total',
-          valueColor: '#1e3a5f',
-          labelColor: '#7a8fa6',
-          fontSize: 24
-        }
-      }
-    }
-  });
-}
-
-// ============================================================
-// GRÁFICO 6: Consolidado por Situação – Barras Verticais
-// ============================================================
-function renderChartConsolidadoSituacao() {
-  const ctx = document.getElementById('chartConsolidadoSituacao')?.getContext('2d');
-  if (!ctx) return;
-
-  const total = filteredData.length;
-  const sitsOrder = ['AGE','REC','FAL','CAN','TRA'];
-  const sitsData = sitsOrder.map(key => {
-    const count = filteredData.filter(r => r.situacao === key).length;
-    return {
-      key,
-      label:  SITUACAO_COLORS[key].label,
-      count,
-      pct:    total > 0 ? parseFloat((count/total*100).toFixed(1)) : 0,
-      bg:     SITUACAO_COLORS[key].bg,
-      border: SITUACAO_COLORS[key].border,
-    };
-  });
-
-  const labels  = sitsData.map(s => s.label);
-  const data    = sitsData.map(s => s.count);
-  const bgs     = sitsData.map(s => s.bg);
-  const borders = sitsData.map(s => s.border);
-
-  destroyChart(chartConsolidadoSituacao);
-  chartConsolidadoSituacao = new Chart(ctx, {
+  destroyChart(chartSituacao);
+  chartSituacao = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [{
         label: 'Quantidade',
         data,
-        backgroundColor: bgs,
-        borderColor:     borders,
+        backgroundColor: [
+          'rgba(13,71,36,0.88)',    // Verde escuro muito escuro para AGE
+          'rgba(26,122,63,0.88)',   // Verde escuro para REC
+          'rgba(39,174,96,0.88)',   // Verde escuro médio para FAL
+          'rgba(52,152,85,0.88)',   // Verde escuro claro para CAN
+          'rgba(65,130,74,0.88)'    // Verde escuro teal para TRA
+        ],
+        borderColor: [
+          '#0d4724',
+          '#1a7a3f',
+          '#27ae60',
+          '#349855',
+          '#41824a'
+        ],
         borderWidth: 2,
-        borderRadius: 10,
+        borderRadius: 8,
         borderSkipped: false,
       }]
     },
@@ -984,39 +879,107 @@ function renderChartConsolidadoSituacao() {
         tooltip: {
           ...TOOLTIP_BASE,
           callbacks: {
-            label: ctx => {
-              const sd = sitsData[ctx.dataIndex];
-              return [` ${fmt(ctx.raw)} registros`, ` ${sd.pct}% do total`];
-            }
+            label: ctx => ` ${fmt(ctx.raw)} consultas`,
+            afterLabel: ctx => ` ${total > 0 ? (ctx.raw/total*100).toFixed(1) : 0}% do total`
           }
         },
         datalabels: {
-          anchor: 'end',
-          align:  'top',
-          clamp:  true,
-          color:  '#1a2a3a',
-          font: { family: 'Inter', size: 14, weight: '800' },
-          formatter: (val) => {
-            return `${fmt(val)}`;
-          }
+          anchor: 'center', align: 'center',
+          color: '#fff',
+          textStrokeColor: 'rgba(0,0,0,0.30)', textStrokeWidth: 2,
+          font: { family: 'Inter', size: 13, weight: 'bold' },
+          formatter: val => val > 0 ? fmt(val) : ''
         }
       },
-      layout: { padding: { top: 40 } },
       scales: {
         x: {
-          ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#1e3a5f' },
+          ticks: {
+            font: { family: 'Inter', size: 10, weight: '600' },
+            color: '#3d5166', maxRotation: 35
+          },
           grid: { display: false }
         },
         y: {
           beginAtZero: true,
-          ticks: { 
-            font: { family: 'Inter', size: 10 }, 
-            color: '#7a8fa6',
-            callback: function(val) {
-              return val >= 1000 ? (val/1000).toFixed(0) + 'k' : val;
-            }
-          },
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' },
           grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// ============================================================
+// GRÁFICO 6: Distribuição por Mês – ROSCA (MULTICOLOR)
+// ============================================================
+function renderChartMeses() {
+  const ctx = document.getElementById('chartMeses')?.getContext('2d');
+  if (!ctx) return;
+
+  const counts = countBy(filteredData, r => r.mesAgendamento);
+  const entries = sortedEntries(counts);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  const total = data.reduce((a,b) => a+b, 0);
+
+  destroyChart(chartMeses);
+  chartMeses = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: labels.map((_,i) => PALETTE_MONTHS[i % PALETTE_MONTHS.length]),
+        borderColor: '#fff',
+        borderWidth: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: { family: 'Inter', size: 11, weight: '600' },
+            color: '#3d5166',
+            padding: 14,
+            generateLabels: (chart) => {
+              const data = chart.data;
+              return data.labels.map((label, i) => ({
+                text: `${label}: ${fmt(data.datasets[0].data[i])}`,
+                fillStyle: data.datasets[0].backgroundColor[i],
+                hidden: false,
+                index: i
+              }));
+            }
+          }
+        },
+        tooltip: {
+          ...TOOLTIP_BASE,
+          callbacks: {
+            label: ctx => {
+              const value = ctx.raw;
+              const pct = total > 0 ? (value/total*100).toFixed(1) : 0;
+              return ` ${fmt(value)} agendamentos (${pct}%)`;
+            }
+          }
+        },
+        datalabels: {
+          color: '#fff',
+          font: { family: 'Inter', size: 11, weight: 'bold' },
+          formatter: (val, ctx) => {
+            const pct = total > 0 ? (val/total*100).toFixed(0) : 0;
+            return pct + '%';
+          }
+        },
+        centerText: {
+          enabled: true,
+          value: fmt(total),
+          label: 'Total',
+          fontSize: 24,
+          valueColor: '#1e3a5f',
+          labelColor: '#7a8fa6'
         }
       }
     }
@@ -1679,3 +1642,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initDatePickers();
   loadData();
 });
+
+
