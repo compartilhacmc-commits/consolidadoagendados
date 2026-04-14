@@ -309,8 +309,8 @@
     </section>
 
     <!-- ===== GRÁFICOS LINHA 6 – NOVOS GRÁFICOS: Situação (Barras Verdes) + Distribuição por Mês (Rosca) ===== -->
-    <section class="charts-row charts-row-equal">
-      <div class="chart-card">
+    <section class="charts-row charts-row-equal charts-row-small">
+      <div class="chart-card chart-card-small">
         <div class="chart-header">
           <div class="chart-title-group">
             <div class="chart-dot dot-teal"></div>
@@ -323,7 +323,7 @@
         </div>
       </div>
 
-      <div class="chart-card">
+      <div class="chart-card chart-card-small">
         <div class="chart-header">
           <div class="chart-title-group">
             <div class="chart-dot dot-orange"></div>
@@ -331,7 +331,7 @@
           </div>
           <span class="chart-badge">Rosca</span>
         </div>
-        <div class="chart-body chart-body-small">
+        <div class="chart-body chart-body-doughnut-small">
           <canvas id="chartMeses"></canvas>
         </div>
       </div>
@@ -368,18 +368,19 @@
               <th onclick="sortTable(1)">Unidade Solicitante <i class="fas fa-sort"></i></th>
               <th onclick="sortTable(2)">Tipo de Serviço <i class="fas fa-sort"></i></th>
               <th onclick="sortTable(3)">CBO / Especialidade <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(4)">Unidade Executante <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(5)" class="text-center">AGE <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(6)" class="text-center">REC <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(7)" class="text-center">FAL <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(8)" class="text-center">CAN <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(9)" class="text-center">TRA <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(10)" class="text-center">Total Agend. <i class="fas fa-sort"></i></th>
-              <th onclick="sortTable(11)" class="text-center">% Absent. <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(4)">Profissional Médico <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(5)">Unidade Executante <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(6)" class="text-center">AGE <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(7)" class="text-center">REC <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(8)" class="text-center">FAL <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(9)" class="text-center">CAN <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(10)" class="text-center">TRA <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(11)" class="text-center">Total Agend. <i class="fas fa-sort"></i></th>
+              <th onclick="sortTable(12)" class="text-center">% Absent. <i class="fas fa-sort"></i></th>
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="12" class="empty-msg">Aguardando dados...</td></tr>
+            <tr><td colspan="13" class="empty-msg">Aguardando dados...</td></tr>
           </tbody>
           <tfoot id="tableFoot"></tfoot>
         </table>
