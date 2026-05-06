@@ -34,6 +34,8 @@ Chart.register(centerTextPlugin);
 const SHEET_ID  = '14DiFK9EW36s8ntkukyhiRMJxcX0ghG5XTzWb1TwpI2Q';
 const SHEET_GID = '0';
 const CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+const CACHE_KEY = 'cmcDashboardData_v2';
+const CACHE_EXPIRY_HOURS = 168; // 7 dias
 
 // ============================================================
 // MAPEAMENTO DE OPERADORES
@@ -433,6 +435,7 @@ function initTabs() {
 }
 
 function renderChartsForTab(tabId) {
+  destroyAllCharts();
   switch(tabId) {
     case 'visao-geral':
       renderChartDistrito();
@@ -479,46 +482,171 @@ function renderChartsForTab(tabId) {
 }
 
 // ============================================================
-// CARREGAR DADOS
+// DESTRUIR TODOS OS GRÁFICOS
 // ============================================================
-async function loadData() {
+function destroyAllCharts() {
+  const refs = [
+    'chartDistrito', 'chartTipoAtendimento', 'chartEspecialidade', 'chartPrestador',
+    'chartSituacao', 'chartMeses', 'chartAbsenteismoEsp', 'chartAbsenteismoDist',
+    'chartAbsenteismoMensal', 'chartAbsenteismoPrestador', 'chartCancelamentosDist',
+    'chartCancelamentosEsp', 'chartCancelamentosPrestador', 'chartCancelamentosMensal',
+    'chartRecepcionadosDistrito', 'chartRecepcionadosEspecialidade', 'chartRecepcionadosPrestador',
+    'chartRecepcionadosMensal', 'chartTransferidosDistrito', 'chartTransferidosEspecialidade',
+    'chartTransferidosPrestador', 'chartTransferidosMensal', 'chartPrimeiraConsultaDistrito',
+    'chartRetornoDistrito', 'chartComparativoDistrito', 'chartDistritoRosca'
+  ];
+  refs.forEach(ref => {
+    if (window[ref]) {
+      try { window[ref].destroy(); } catch(e) {}
+      window[ref] = null;
+    }
+  });
+}
+
+// ============================================================
+// CARREGAR DADOS COM CACHE
+// ============================================================
+async function loadData(forceRefresh = false) {
+  const btnRefresh = document.getElementById('btnRefresh');
+  const icon = document.getElementById('refreshIcon');
+  
+  if (btnRefresh) btnRefresh.disabled = true;
+  if (icon) icon.classList.add('spinning');
   showLoading(true);
   setStatus('Carregando...', false);
-  const icon = document.getElementById('refreshIcon');
-  if (icon) icon.classList.add('spinning');
 
   try {
-    const response = await fetch(CSV_URL + '&t=' + Date.now(), { cache: 'no-store', mode: 'cors' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const text = await response.text();
+    if (!forceRefresh) {
+      const cached = getCachedData();
+      if (cached) {
+        console.log('Dados carregados do cache.');
+        allData = cached.data;
+        onDataLoaded();
+        setStatus('Conectado (cache)', true);
+        updateLastUpdate(new Date(cached.timestamp));
+        showLoading(false);
+        if (icon) icon.classList.remove('spinning');
+        if (btnRefresh) btnRefresh.disabled = false;
+        fetchDataInBackground();
+        return;
+      }
+    }
 
+    const freshData = await fetchFreshData();
+    if (freshData) {
+      allData = freshData;
+      const timestamp = new Date().toISOString();
+      setCachedData(allData, timestamp);
+      onDataLoaded();
+      setStatus('Conectado', true);
+      updateLastUpdate(new Date());
+    } else {
+      throw new Error('Falha ao buscar dados.');
+    }
+  } catch (err) {
+    console.error('Erro ao carregar dados:', err);
+    const expiredCache = getCachedData(true);
+    if (expiredCache) {
+      allData = expiredCache.data;
+      onDataLoaded();
+      setStatus('Usando cache antigo', false);
+      updateLastUpdate(new Date(expiredCache.timestamp));
+      showError('Não foi possível atualizar. Usando dados em cache.');
+    } else {
+      showError('Erro ao carregar dados. Verifique a conexão ou permissões da planilha.');
+    }
+  } finally {
+    showLoading(false);
+    if (icon) icon.classList.remove('spinning');
+    if (btnRefresh) btnRefresh.disabled = false;
+  }
+}
+
+async function fetchFreshData() {
+  const response = await fetch(CSV_URL + '&t=' + Date.now(), { cache: 'no-store', mode: 'cors' });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const text = await response.text();
+
+  return new Promise((resolve, reject) => {
     Papa.parse(text, {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: false,
       transformHeader: h => h.trim(),
       complete(results) {
-        allData = normalizeData(results.data);
-        populateMultiSelectOptions();
-        applyFilters();
-        setStatus('Conectado', true);
-        updateLastUpdate();
-        showLoading(false);
-        if (icon) icon.classList.remove('spinning');
+        resolve(normalizeData(results.data));
       },
       error(err) {
         console.error('Parse error:', err);
-        showError('Erro ao processar os dados.');
-        if (icon) icon.classList.remove('spinning');
-        showLoading(false);
+        reject(err);
       }
     });
-  } catch (err) {
-    console.error('Fetch error:', err);
-    showError('Não foi possível carregar os dados. Verifique as permissões da planilha.');
-    if (icon) icon.classList.remove('spinning');
-    showLoading(false);
+  });
+}
+
+async function fetchDataInBackground() {
+  try {
+    const freshData = await fetchFreshData();
+    if (freshData) {
+      const cached = getCachedData(true);
+      if (!cached || JSON.stringify(freshData) !== JSON.stringify(cached.data)) {
+        allData = freshData;
+        const timestamp = new Date().toISOString();
+        setCachedData(allData, timestamp);
+        onDataLoaded();
+        setStatus('Conectado', true);
+        updateLastUpdate(new Date());
+        console.log('Dados atualizados em segundo plano.');
+      }
+    }
+  } catch (e) {
+    console.warn('Atualização em segundo plano falhou:', e);
   }
+}
+
+// ============================================================
+// CACHE COM LOCALSTORAGE
+// ============================================================
+function setCachedData(data, timestamp) {
+  try {
+    const cacheObject = {
+      data: data,
+      timestamp: timestamp || new Date().toISOString()
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheObject));
+  } catch (e) {
+    console.warn('Não foi possível salvar no cache:', e);
+  }
+}
+
+function getCachedData(ignoreExpiry = false) {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+    
+    const cacheObject = JSON.parse(cached);
+    if (ignoreExpiry) return cacheObject;
+    
+    const now = new Date();
+    const cacheDate = new Date(cacheObject.timestamp);
+    const hoursDiff = (now - cacheDate) / (1000 * 60 * 60);
+    
+    if (hoursDiff <= CACHE_EXPIRY_HOURS) {
+      return cacheObject;
+    }
+    return null;
+  } catch (e) {
+    console.warn('Erro ao ler cache:', e);
+    return null;
+  }
+}
+
+// ============================================================
+// PROCESSAMENTO PÓS-CARGA
+// ============================================================
+function onDataLoaded() {
+  populateMultiSelectOptions();
+  applyFilters();
 }
 
 // ============================================================
@@ -550,7 +678,7 @@ function normalizeData(rows) {
     const situacao      = (get('SITUAÇÃO','SITUACAO') || '').toUpperCase().trim();
     const operCod       = get('OPERADOR AGENDAMENTO');
 
-    const dataCriacao       = get('DATA CRIAÇÃO DO AGENDAMENTO','DATA CRIACAO DO AGENDAMENTO','DATA CRIAÇÃO','DATA_CRIACAO');
+    const dataCriacao       = get('DATA CRIAÇÃO DO AGENDAMENTO', 'DATA CRIACAO DO AGENDAMENTO');
     const dataCriacaoParsed = parseDate(dataCriacao);
 
     const dataAgenda       = get('DATA AGENDA','DATA_AGENDA');
@@ -651,6 +779,7 @@ function applyFilters() {
     if (mesesSelecionados.length > 0 && !mesesSelecionados.includes(r.mesAgendamento)) return false;
     if (unidadesSelecionadas.length > 0 && !unidadesSelecionadas.includes(r.unidadeSolicitante)) return false;
     if (distritosSelecionados.length > 0 && !distritosSelecionados.includes(r.distrito)) return false;
+    
     if (dataCriacaoSelecionada) {
       if (!r.dataCriacaoParsed) return false;
       if (!isSameDay(r.dataCriacaoParsed, dataCriacaoSelecionada)) return false;
@@ -947,7 +1076,7 @@ function renderChartMeses() {
 }
 
 // ============================================================
-// GRÁFICOS - AGENDAMENTOS POR DISTRITO (CORES ORIGINAIS)
+// GRÁFICOS - AGENDAMENTOS POR DISTRITO
 // ============================================================
 
 function renderChartPrimeiraConsultaDistrito() {
@@ -1273,7 +1402,15 @@ function renderChartAbsenteismoMensal() {
     map[key].total++;
     if (r.situacao === 'FAL') map[key].fal++;
   });
-  const sortedKeys = Object.keys(map).sort();
+  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sortedKeys = Object.keys(map).sort((a, b) => {
+    const [mesA, anoA] = a.split('/');
+    const [mesB, anoB] = b.split('/');
+    const indexMesA = mesesOrdenados.indexOf(mesA);
+    const indexMesB = mesesOrdenados.indexOf(mesB);
+    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
+    return indexMesA - indexMesB;
+  });
   const labels = sortedKeys;
   const data = sortedKeys.map(k => map[k].total > 0 ? parseFloat((map[k].fal / map[k].total * 100).toFixed(1)) : 0);
   destroyChart(chartAbsenteismoMensal);
@@ -1416,7 +1553,15 @@ function renderChartCancelamentosMensal() {
     map[key].total++;
     if (r.situacao === 'CAN') map[key].can++;
   });
-  const sortedKeys = Object.keys(map).sort();
+  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sortedKeys = Object.keys(map).sort((a, b) => {
+    const [mesA, anoA] = a.split('/');
+    const [mesB, anoB] = b.split('/');
+    const indexMesA = mesesOrdenados.indexOf(mesA);
+    const indexMesB = mesesOrdenados.indexOf(mesB);
+    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
+    return indexMesA - indexMesB;
+  });
   const labels = sortedKeys;
   const data = sortedKeys.map(k => map[k].total > 0 ? map[k].can : 0);
   destroyChart(chartCancelamentosMensal);
@@ -1506,7 +1651,15 @@ function renderChartRecepcionadosMensal() {
     if (!map[key]) map[key] = 0;
     if (r.situacao === 'REC') map[key]++;
   });
-  const sortedKeys = Object.keys(map).sort();
+  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sortedKeys = Object.keys(map).sort((a, b) => {
+    const [mesA, anoA] = a.split('/');
+    const [mesB, anoB] = b.split('/');
+    const indexMesA = mesesOrdenados.indexOf(mesA);
+    const indexMesB = mesesOrdenados.indexOf(mesB);
+    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
+    return indexMesA - indexMesB;
+  });
   const labels = sortedKeys;
   const data = sortedKeys.map(k => map[k]);
   destroyChart(chartRecepcionadosMensal);
@@ -1596,7 +1749,15 @@ function renderChartTransferidosMensal() {
     if (!map[key]) map[key] = 0;
     if (r.situacao === 'TRA') map[key]++;
   });
-  const sortedKeys = Object.keys(map).sort();
+  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sortedKeys = Object.keys(map).sort((a, b) => {
+    const [mesA, anoA] = a.split('/');
+    const [mesB, anoB] = b.split('/');
+    const indexMesA = mesesOrdenados.indexOf(mesA);
+    const indexMesB = mesesOrdenados.indexOf(mesB);
+    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
+    return indexMesA - indexMesB;
+  });
   const labels = sortedKeys;
   const data = sortedKeys.map(k => map[k]);
   destroyChart(chartTransferidosMensal);
@@ -1850,9 +2011,12 @@ function showError(msg) {
   setTimeout(() => toast.remove(), 7000);
 }
 
-function updateLastUpdate() {
+function updateLastUpdate(date) {
   const el = document.getElementById('lastUpdate');
-  if (el) el.textContent = `Última atualização: ${new Date().toLocaleString('pt-BR')}`;
+  if (el) {
+    const d = date || new Date();
+    el.textContent = `Última atualização: ${d.toLocaleString('pt-BR')}`;
+  }
 }
 
 // ============================================================
