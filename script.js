@@ -28,6 +28,7 @@ const centerTextPlugin = {
 };
 Chart.register(centerTextPlugin);
 
+
 // ============================================================
 // CONFIGURAÇÕES
 // ============================================================
@@ -35,7 +36,7 @@ const SHEET_ID  = '14DiFK9EW36s8ntkukyhiRMJxcX0ghG5XTzWb1TwpI2Q';
 const SHEET_GID = '0';
 const CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 const CACHE_KEY = 'cmcDashboardData_v2';
-const CACHE_EXPIRY_HOURS = 168; // 7 dias
+const CACHE_EXPIRY_HOURS = 0.5; // ← 30 MINUTOS (meia hora)
 
 // ============================================================
 // MAPEAMENTO DE OPERADORES
@@ -148,16 +149,65 @@ const MESES_PT  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 // ============================================================
-// PALETAS DE CORES
+// PALETAS DE CORES - MONOCROMÁTICAS (MAIS ELEGANTES)
 // ============================================================
-const PALETTE_BLUE    = ['#1e3a5f','#2d5494','#4a90d9','#74b3e8','#a8d1f5','#c8e4fb'];
-const PALETTE_PURPLE  = ['#6c3483','#7d3c98','#9b59b6','#af7ac5','#c39bd3','#d7bde2'];
-const PALETTE_TEAL    = ['#0e6655','#148069','#1abc9c','#45d1a0','#76ddb5','#a8e8ce','#c0f0df','#d4f7ec','#e0fbf3','#e8fdf7','#f0fefb','#f5fffd'];
-const PALETTE_ORANGE  = ['#d35400','#e67e22','#f39c12','#f5b041','#f8c471','#fad7a0'];
-const PALETTE_ROSE    = ['#922b21','#c0392b','#e74c3c','#ec7063','#f1948a','#f5b7b1'];
-const PALETTE_GRAPE   = ['#512e5f','#7d3c98','#9b59b6','#bb8fce','#d2b4de','#e8daef'];
-const PALETTE_MONTHS  = ['#e74c3c','#3498db','#e67e22','#2ecc71','#9b59b6','#1abc9c','#f39c12','#e91e63','#00bcd4','#ff5722','#8bc34a','#673ab7'];
 
+// VISÃO GERAL - AZUL
+const PALETTE_AZUL = [
+  '#0a1628', '#0f1f3a', '#142844', '#1a3256',
+  '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
+  '#4a90d9', '#6aaff0', '#8fc7f5', '#b5dffa',
+  '#d4edfd', '#eaf6ff'
+];
+
+// AGENDAMENTOS POR DISTRITO - ROSA/PINK
+const PALETTE_ROSA = [
+  '#1a0a0a', '#2d1015', '#3d1520', '#4d1a2a',
+  '#6b2038', '#8a2a48', '#a83258', '#c93d70',
+  '#e04a82', '#ea6a9a', '#f08cb0', '#f5b0c8',
+  '#fad0df', '#fce8f0'
+];
+
+// ABSENTEÍSMO - VERMELHO
+const PALETTE_ABSENTEISMO = [
+  '#1a0a0a', '#2d1010', '#3d1515', '#4d1a1a',
+  '#6b2020', '#8a2a2a', '#a83232', '#c93d3d',
+  '#e04a4a', '#ea6a6a', '#f08c8c', '#f5b0b0',
+  '#fad0d0', '#fce8e8'
+];
+
+// RECEPCIONADOS - VERDE
+const PALETTE_RECEPCIONADOS = [
+  '#0a1a10', '#0f2618', '#143020', '#1a3d28',
+  '#1f4d30', '#26603a', '#2e7042', '#3a8a52',
+  '#48a064', '#5ab87a', '#78d096', '#a0e0b4',
+  '#c8f0d4', '#e8f8ec'
+];
+
+// CANCELADOS - VERMELHO ESCURO
+const PALETTE_CANCELADOS = [
+  '#1a0a0a', '#2d1010', '#3d1515', '#4d1a1a',
+  '#6b2020', '#8a2a2a', '#a83232', '#c93d3d',
+  '#e04a4a', '#ea6a6a', '#f08c8c', '#f5b0b0',
+  '#fad0d0', '#fce8e8'
+];
+
+// TRANSFERIDOS - ROXO
+const PALETTE_TRANSFERIDOS = [
+  '#140a1a', '#1e0f28', '#281430', '#321a3d',
+  '#3d1f4d', '#4a2660', '#582e70', '#6a3a8a',
+  '#7c48a0', '#945ab8', '#b078d0', '#c8a0e0',
+  '#e0c8f0', '#f0e8f8'
+];
+
+// MESES (doughnut) - AZUL com variação
+const PALETTE_MONTHS = [
+  '#0a1628', '#0f1f3a', '#142844', '#1a3256',
+  '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
+  '#4a90d9', '#6aaff0', '#8fc7f5', '#b5dffa'
+];
+
+// TOOLTIP BASE
 const TOOLTIP_BASE = {
   backgroundColor: 'rgba(20,40,68,0.92)',
   titleFont:  { family: 'Inter', size: 12, weight: '700' },
@@ -504,7 +554,7 @@ function destroyAllCharts() {
 }
 
 // ============================================================
-// CARREGAR DADOS COM CACHE
+// CARREGAR DADOS COM CACHE DE CURTA DURAÇÃO
 // ============================================================
 async function loadData(forceRefresh = false) {
   const btnRefresh = document.getElementById('btnRefresh');
@@ -516,10 +566,11 @@ async function loadData(forceRefresh = false) {
   setStatus('Carregando...', false);
 
   try {
+    // Se for forceRefresh (botão Atualizar), IGNORA o cache completamente
     if (!forceRefresh) {
       const cached = getCachedData();
       if (cached) {
-        console.log('Dados carregados do cache.');
+        console.log('📦 Dados carregados do cache (válido por 30 minutos).');
         allData = cached.data;
         onDataLoaded();
         setStatus('Conectado (cache)', true);
@@ -527,33 +578,42 @@ async function loadData(forceRefresh = false) {
         showLoading(false);
         if (icon) icon.classList.remove('spinning');
         if (btnRefresh) btnRefresh.disabled = false;
+        // Busca em segundo plano para atualizar se houver mudanças
         fetchDataInBackground();
         return;
       }
     }
 
+    // Busca dados novos (forçado ou cache expirado)
+    console.log('🔄 Buscando dados novos da planilha...');
     const freshData = await fetchFreshData();
-    if (freshData) {
+    if (freshData && freshData.length > 0) {
       allData = freshData;
       const timestamp = new Date().toISOString();
       setCachedData(allData, timestamp);
       onDataLoaded();
       setStatus('Conectado', true);
       updateLastUpdate(new Date());
+      console.log(`✅ ${freshData.length} registros carregados com sucesso!`);
     } else {
-      throw new Error('Falha ao buscar dados.');
+      throw new Error('Falha ao buscar dados da planilha.');
     }
   } catch (err) {
-    console.error('Erro ao carregar dados:', err);
+    console.error('❌ Erro ao carregar dados:', err);
+    
+    // Tenta usar cache expirado como fallback
     const expiredCache = getCachedData(true);
-    if (expiredCache) {
+    if (expiredCache && expiredCache.data && expiredCache.data.length > 0) {
       allData = expiredCache.data;
       onDataLoaded();
-      setStatus('Usando cache antigo', false);
+      setStatus('⚠️ Usando cache antigo (offline)', false);
       updateLastUpdate(new Date(expiredCache.timestamp));
-      showError('Não foi possível atualizar. Usando dados em cache.');
+      showError('Não foi possível atualizar. Usando dados em cache. Clique em "Atualizar" para tentar novamente.');
     } else {
-      showError('Erro ao carregar dados. Verifique a conexão ou permissões da planilha.');
+      showError('❌ Erro ao carregar dados. Verifique sua conexão com a internet.');
+      // Mostra mensagem na tela
+      const msg = document.getElementById('statusText');
+      if (msg) msg.textContent = '⚠️ Sem conexão com a planilha';
     }
   } finally {
     showLoading(false);
@@ -562,11 +622,53 @@ async function loadData(forceRefresh = false) {
   }
 }
 
+// ============================================================
+// BUSCAR DADOS DA PLANILHA - VERSÃO CORRIGIDA (SEM CORS)
+// ============================================================
 async function fetchFreshData() {
-  const response = await fetch(CSV_URL + '&t=' + Date.now(), { cache: 'no-store', mode: 'cors' });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const text = await response.text();
+  try {
+    // USANDO A URL ALTERNATIVA QUE FUNCIONA COM CORS
+    const url = CSV_URL + '&t=' + Date.now();
+    console.log('📡 Fazendo requisição para:', url);
+    
+    // REMOVI todos os cabeçalhos personalizados que causavam CORS
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+    
+    const text = await response.text();
+    console.log(`📄 Resposta recebida: ${text.length} caracteres`);
+    
+    if (!text || text.trim().length === 0) {
+      throw new Error('Resposta vazia da planilha');
+    }
 
+    // Verifica se a resposta é um CSV válido
+    const firstLine = text.split('\n')[0];
+    if (!firstLine || !firstLine.includes(',')) {
+      console.warn('⚠️ Possível erro na resposta. Primeira linha:', firstLine);
+      // Tenta limpar a resposta se tiver lixo no início
+      const cleanedText = text.replace(/^[^{]*\{[^}]*\}\s*/, '');
+      if (cleanedText !== text) {
+        console.log('🔄 Texto limpo, tentando novamente...');
+        return parseCSV(cleanedText);
+      }
+    }
+
+    return parseCSV(text);
+    
+  } catch (err) {
+    console.error('❌ Erro ao buscar dados:', err);
+    throw err;
+  }
+}
+
+// ============================================================
+// FUNÇÃO AUXILIAR PARA PARSE DO CSV
+// ============================================================
+function parseCSV(text) {
   return new Promise((resolve, reject) => {
     Papa.parse(text, {
       header: true,
@@ -574,72 +676,179 @@ async function fetchFreshData() {
       dynamicTyping: false,
       transformHeader: h => h.trim(),
       complete(results) {
-        resolve(normalizeData(results.data));
+        if (results.errors && results.errors.length > 0) {
+          console.warn('⚠️ Erros no parse:', results.errors);
+        }
+        const data = normalizeData(results.data);
+        console.log(`📊 ${data.length} registros normalizados`);
+        resolve(data);
       },
       error(err) {
-        console.error('Parse error:', err);
+        console.error('❌ Erro no Papa Parse:', err);
         reject(err);
       }
     });
   });
 }
 
+// ============================================================
+// ATUALIZAÇÃO EM SEGUNDO PLANO
+// ============================================================
 async function fetchDataInBackground() {
   try {
+    console.log('🔄 Atualização em segundo plano iniciada...');
     const freshData = await fetchFreshData();
-    if (freshData) {
-      const cached = getCachedData(true);
-      if (!cached || JSON.stringify(freshData) !== JSON.stringify(cached.data)) {
+    if (freshData && freshData.length > 0) {
+      // Compara com os dados atuais para ver se houve mudança
+      const currentDataStr = JSON.stringify(allData);
+      const newDataStr = JSON.stringify(freshData);
+      
+      if (currentDataStr !== newDataStr) {
+        console.log('🔄 Dados foram atualizados em segundo plano!');
         allData = freshData;
         const timestamp = new Date().toISOString();
         setCachedData(allData, timestamp);
         onDataLoaded();
-        setStatus('Conectado', true);
+        setStatus('🔄 Dados atualizados!', true);
         updateLastUpdate(new Date());
-        console.log('Dados atualizados em segundo plano.');
+        
+        // Notifica o usuário
+        showToast('📊 Dados da planilha foram atualizados!');
+      } else {
+        console.log('✅ Dados já estão atualizados.');
+        // Atualiza o timestamp do cache
+        setCachedData(allData, new Date().toISOString());
       }
     }
   } catch (e) {
-    console.warn('Atualização em segundo plano falhou:', e);
+    console.warn('⚠️ Atualização em segundo plano falhou:', e.message);
   }
 }
 
 // ============================================================
-// CACHE COM LOCALSTORAGE
+// CACHE COM LOCALSTORAGE - COM VERIFICAÇÃO DE TAMANHO
 // ============================================================
 function setCachedData(data, timestamp) {
   try {
+    // Verifica o tamanho dos dados
+    const dataStr = JSON.stringify(data);
+    const sizeInMB = (dataStr.length * 2) / (1024 * 1024);
+    console.log(`📊 Tamanho dos dados: ${sizeInMB.toFixed(2)} MB`);
+    
+    // Só salva se for menor que 4MB (evita erro QuotaExceededError)
+    if (sizeInMB > 4) {
+      console.warn('⚠️ Dados muito grandes para cache (>4MB). Pulando cache.');
+      return;
+    }
+    
     const cacheObject = {
       data: data,
       timestamp: timestamp || new Date().toISOString()
     };
     localStorage.setItem(CACHE_KEY, JSON.stringify(cacheObject));
+    console.log(`💾 Cache salvo com ${data.length} registros`);
   } catch (e) {
-    console.warn('Não foi possível salvar no cache:', e);
+    console.warn('⚠️ Não foi possível salvar no cache:', e.message);
   }
 }
 
 function getCachedData(ignoreExpiry = false) {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return null;
+    if (!cached) {
+      console.log('📭 Nenhum cache encontrado.');
+      return null;
+    }
     
     const cacheObject = JSON.parse(cached);
-    if (ignoreExpiry) return cacheObject;
+    
+    if (!cacheObject.data || cacheObject.data.length === 0) {
+      console.log('📭 Cache vazio.');
+      return null;
+    }
+    
+    if (ignoreExpiry) {
+      console.log(`📦 Usando cache (ignorando expiração): ${cacheObject.data.length} registros`);
+      return cacheObject;
+    }
     
     const now = new Date();
     const cacheDate = new Date(cacheObject.timestamp);
     const hoursDiff = (now - cacheDate) / (1000 * 60 * 60);
     
-    if (hoursDiff <= CACHE_EXPIRY_HOURS) {
+    console.log(`⏱️ Cache tem ${hoursDiff.toFixed(1)} horas de idade`);
+    
+    if (hoursDiff <= 0.5) { // 30 minutos
+      console.log(`✅ Cache válido: ${cacheObject.data.length} registros`);
       return cacheObject;
     }
+    
+    console.log('⏰ Cache expirado. Buscando dados novos...');
     return null;
   } catch (e) {
-    console.warn('Erro ao ler cache:', e);
+    console.warn('⚠️ Erro ao ler cache:', e);
     return null;
   }
 }
+
+// ============================================================
+// NOVA FUNÇÃO: TOAST DE NOTIFICAÇÃO
+// ============================================================
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  const colors = {
+    info: '#2980b9',
+    success: '#27ae60',
+    warning: '#f39c12',
+    error: '#e74c3c'
+  };
+  
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: ${colors[type] || colors.info};
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideUp 0.3s ease;
+    max-width: 400px;
+  `;
+  
+  const icons = {
+    info: 'ℹ️',
+    success: '✅',
+    warning: '⚠️',
+    error: '❌'
+  };
+  
+  toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+// Adiciona o estilo da animação
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(style);
 
 // ============================================================
 // PROCESSAMENTO PÓS-CARGA
@@ -875,6 +1084,10 @@ function renderChartDistrito() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
+  
+  // CORES EM AZUL (tom mais escuro para o mais claro)
+  const colors = labels.map((_, i) => PALETTE_AZUL[i % PALETTE_AZUL.length]);
+  
   destroyChart(chartDistrito);
   chartDistrito = new Chart(ctx, {
     type: 'bar',
@@ -883,21 +1096,45 @@ function renderChartDistrito() {
       datasets: [{
         label: 'Agendamentos',
         data,
-        backgroundColor: labels.map(() => 'rgba(192,57,43,0.85)'),
-        borderColor: labels.map(() => '#c0392b'),
-        borderWidth: 2, borderRadius: 8, borderSkipped: false,
+        backgroundColor: colors.map(c => c + 'dd'),
+        borderColor: colors.map(c => c),
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${fmt(ctx.raw)} agendamentos`, afterLabel: ctx => ` ${total > 0 ? (ctx.raw/total*100).toFixed(1) : 0}% do total` } },
-        datalabels: { anchor: 'center', align: 'center', color: '#fff', textStrokeColor: 'rgba(0,0,0,0.30)', textStrokeWidth: 2, font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' }
+        tooltip: {
+          ...TOOLTIP_BASE,
+          callbacks: {
+            label: ctx => ` ${fmt(ctx.raw)} agendamentos`,
+            afterLabel: ctx => ` ${total > 0 ? (ctx.raw/total*100).toFixed(1) : 0}% do total`
+          }
+        },
+        datalabels: {
+          anchor: 'center',
+          align: 'center',
+          color: '#fff',
+          textStrokeColor: 'rgba(0,0,0,0.30)',
+          textStrokeWidth: 2,
+          font: { family: 'Inter', size: 13, weight: 'bold' },
+          formatter: val => val > 0 ? fmt(val) : ''
+        }
       },
       scales: {
-        x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } }
+        x: {
+          ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' },
+          grid: { display: false }
+        }
       }
     }
   });
@@ -908,28 +1145,46 @@ function renderChartTipoAtendimento() {
   if (!ctx) return;
   const pc = filteredData.filter(r => r.tipoAtendimento === 'Primeira Consulta').length;
   const ret = filteredData.filter(r => r.tipoAtendimento === 'Retorno').length;
+  
   destroyChart(chartTipoAtendimento);
   chartTipoAtendimento = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: ['1ª Consulta', 'Retorno'],
       datasets: [{
-        label: 'Quantidade', data: [pc, ret],
-        backgroundColor: ['rgba(30,58,95,0.88)','rgba(39,174,96,0.88)'],
-        borderColor: ['#1e3a5f','#27ae60'],
-        borderWidth: 2, borderRadius: 8, borderSkipped: false,
+        label: 'Quantidade',
+        data: [pc, ret],
+        backgroundColor: ['#1e3a5f', '#4a90d9'],
+        borderColor: ['#1e3a5f', '#4a90d9'],
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${fmt(ctx.raw)} agendamentos` } },
-        datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { family: 'Inter', size: 18, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' }
+        datalabels: {
+          anchor: 'center',
+          align: 'center',
+          color: '#fff',
+          font: { family: 'Inter', size: 18, weight: 'bold' },
+          formatter: val => val > 0 ? fmt(val) : ''
+        }
       },
       scales: {
-        x: { ticks: { font: { family: 'Inter', size: 15, weight: '700' }, color: '#1e3a5f' }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } }
+        x: {
+          ticks: { font: { family: 'Inter', size: 15, weight: '700' }, color: '#1e3a5f' },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' },
+          grid: { display: false }
+        }
       }
     }
   });
@@ -942,28 +1197,57 @@ function renderChartEspecialidade() {
   const entries = sortedEntries(counts, 15);
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
+  
+  const colors = labels.map((_, i) => PALETTE_AZUL[i % PALETTE_AZUL.length]);
+  
   destroyChart(chartEspecialidade);
   chartEspecialidade = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [{
-        label: 'Agendamentos', data,
-        backgroundColor: labels.map((_,i) => PALETTE_PURPLE[i % PALETTE_PURPLE.length] + 'dd'),
-        borderColor: labels.map((_,i) => PALETTE_PURPLE[i % PALETTE_PURPLE.length]),
-        borderWidth: 2, borderRadius: 5, borderSkipped: false,
+        label: 'Agendamentos',
+        data,
+        backgroundColor: colors.map(c => c + 'dd'),
+        borderColor: colors.map(c => c),
+        borderWidth: 2,
+        borderRadius: 5,
+        borderSkipped: false,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
       plugins: {
-        legend: { display: false }, tooltip: TOOLTIP_BASE,
-        datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) }
+        legend: { display: false },
+        tooltip: TOOLTIP_BASE,
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: '#1e3a5f',
+          font: { family: 'Inter', size: 13, weight: '800' },
+          formatter: val => fmt(val)
+        }
       },
       layout: { padding: { right: 54 } },
       scales: {
-        y: { ticks: { font: { family: 'Inter', size: 10 }, color: '#3d5166', callback(val) { const label = this.getLabelForValue(val); return label && label.length > 24 ? label.substring(0,22)+'…' : label; } }, grid: { display: false } },
-        x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } }
+        y: {
+          ticks: {
+            font: { family: 'Inter', size: 10 },
+            color: '#3d5166',
+            callback(val) {
+              const label = this.getLabelForValue(val);
+              return label && label.length > 24 ? label.substring(0,22)+'…' : label;
+            }
+          },
+          grid: { display: false }
+        },
+        x: {
+          beginAtZero: true,
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' },
+          grid: { display: false }
+        }
       }
     }
   });
@@ -976,28 +1260,57 @@ function renderChartPrestador() {
   const entries = sortedEntries(counts, 10);
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
+  
+  const colors = labels.map((_, i) => PALETTE_AZUL[(i+3) % PALETTE_AZUL.length]);
+  
   destroyChart(chartPrestador);
   chartPrestador = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [{
-        label: 'Agendamentos', data,
-        backgroundColor: labels.map((_,i) => PALETTE_BLUE[i % PALETTE_BLUE.length] + 'dd'),
-        borderColor: labels.map((_,i) => PALETTE_BLUE[i % PALETTE_BLUE.length]),
-        borderWidth: 2, borderRadius: 6, borderSkipped: false,
+        label: 'Agendamentos',
+        data,
+        backgroundColor: colors.map(c => c + 'dd'),
+        borderColor: colors.map(c => c),
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
       plugins: {
-        legend: { display: false }, tooltip: TOOLTIP_BASE,
-        datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) }
+        legend: { display: false },
+        tooltip: TOOLTIP_BASE,
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: '#1e3a5f',
+          font: { family: 'Inter', size: 13, weight: '800' },
+          formatter: val => fmt(val)
+        }
       },
       layout: { padding: { right: 54 } },
       scales: {
-        y: { ticks: { font: { family: 'Inter', size: 9 }, color: '#3d5166', callback(val) { const label = this.getLabelForValue(val); return label && label.length > 26 ? label.substring(0,24)+'…' : label; } }, grid: { display: false } },
-        x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } }
+        y: {
+          ticks: {
+            font: { family: 'Inter', size: 9 },
+            color: '#3d5166',
+            callback(val) {
+              const label = this.getLabelForValue(val);
+              return label && label.length > 26 ? label.substring(0,24)+'…' : label;
+            }
+          },
+          grid: { display: false }
+        },
+        x: {
+          beginAtZero: true,
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' },
+          grid: { display: false }
+        }
       }
     }
   });
@@ -1011,31 +1324,60 @@ function renderChartSituacao() {
   const fal = filteredData.filter(r => r.situacao === 'FAL').length;
   const can = filteredData.filter(r => r.situacao === 'CAN').length;
   const tra = filteredData.filter(r => r.situacao === 'TRA').length;
-  const labels = ['Agendados (AGE)', 'Recepcionados (REC)', 'Faltosos (FAL)', 'Cancelados (CAN)', 'Transferidos (TRA)'];
+  const labels = ['Agendados', 'Recepcionados', 'Faltosos', 'Cancelados', 'Transferidos'];
   const data = [age, rec, fal, can, tra];
   const total = data.reduce((a,b) => a+b, 0);
+  
+  // AZUL escuro para os primeiros, mais claro para os últimos
+  const coresAzul = ['#0a1628', '#1a3256', '#2d5494', '#4a90d9', '#6aaff0'];
+  
   destroyChart(chartSituacao);
   chartSituacao = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,
       datasets: [{
-        label: 'Quantidade', data,
-        backgroundColor: ['rgba(13,71,36,0.88)','rgba(26,122,63,0.88)','rgba(39,174,96,0.88)','rgba(52,152,85,0.88)','rgba(65,130,74,0.88)'],
-        borderColor: ['#0d4724','#1a7a3f','#27ae60','#349855','#41824a'],
-        borderWidth: 2, borderRadius: 8, borderSkipped: false,
+        label: 'Quantidade',
+        data,
+        backgroundColor: coresAzul.map(c => c + 'cc'),
+        borderColor: coresAzul,
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${fmt(ctx.raw)} consultas`, afterLabel: ctx => ` ${total > 0 ? (ctx.raw/total*100).toFixed(1) : 0}% do total` } },
-        datalabels: { anchor: 'center', align: 'center', color: '#fff', textStrokeColor: 'rgba(0,0,0,0.30)', textStrokeWidth: 2, font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' }
+        tooltip: {
+          ...TOOLTIP_BASE,
+          callbacks: {
+            label: ctx => ` ${fmt(ctx.raw)} consultas`,
+            afterLabel: ctx => ` ${total > 0 ? (ctx.raw/total*100).toFixed(1) : 0}% do total`
+          }
+        },
+        datalabels: {
+          anchor: 'center',
+          align: 'center',
+          color: '#fff',
+          textStrokeColor: 'rgba(0,0,0,0.30)',
+          textStrokeWidth: 2,
+          font: { family: 'Inter', size: 13, weight: 'bold' },
+          formatter: val => val > 0 ? fmt(val) : ''
+        }
       },
       scales: {
-        x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 35 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } }
+        x: {
+          ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 35 },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' },
+          grid: { display: false }
+        }
       }
     }
   });
@@ -1049,6 +1391,14 @@ function renderChartMeses() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
+  
+  // AZUL do mais escuro para o mais claro (12 meses)
+  const coresAzul = [
+    '#0a1628', '#0f1f3a', '#142844', '#1a3256',
+    '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
+    '#4a90d9', '#6aaff0', '#8fc7f5', '#b5dffa'
+  ];
+  
   destroyChart(chartMeses);
   chartMeses = new Chart(ctx, {
     type: 'doughnut',
@@ -1056,20 +1406,46 @@ function renderChartMeses() {
       labels,
       datasets: [{
         data,
-        backgroundColor: labels.map((_,i) => PALETTE_MONTHS[i % PALETTE_MONTHS.length]),
-        borderColor: '#fff', borderWidth: 3,
+        backgroundColor: labels.map((_, i) => coresAzul[i % coresAzul.length]),
+        borderColor: '#fff',
+        borderWidth: 3,
       }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: 'right',
-          labels: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#3d5166', padding: 14, generateLabels: (chart) => { const data = chart.data; return data.labels.map((label, i) => ({ text: `${label}: ${fmt(data.datasets[0].data[i])}`, fillStyle: data.datasets[0].backgroundColor[i], hidden: false, index: i })); } }
+          labels: {
+            font: { family: 'Inter', size: 11, weight: '600' },
+            color: '#3d5166',
+            padding: 14,
+          }
         },
-        tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => { const value = ctx.raw; const pct = total > 0 ? (value/total*100).toFixed(1) : 0; return ` ${fmt(value)} agendamentos (${pct}%)`; } } },
-        datalabels: { color: '#fff', font: { family: 'Inter', size: 11, weight: 'bold' }, formatter: (val, ctx) => { const pct = total > 0 ? (val/total*100).toFixed(0) : 0; return pct + '%'; } },
-        centerText: { enabled: true, value: fmt(total), label: 'Total', fontSize: 24, valueColor: '#1e3a5f', labelColor: '#7a8fa6' }
+        tooltip: {
+          ...TOOLTIP_BASE,
+          callbacks: {
+            label: ctx => {
+              const value = ctx.raw;
+              const pct = total > 0 ? (value/total*100).toFixed(1) : 0;
+              return ` ${fmt(value)} agendamentos (${pct}%)`;
+            }
+          }
+        },
+        datalabels: {
+          color: '#fff',
+          font: { family: 'Inter', size: 11, weight: 'bold' },
+          formatter: (val) => total > 0 ? (val/total*100).toFixed(0) + '%' : ''
+        },
+        centerText: {
+          enabled: true,
+          value: fmt(total),
+          label: 'Total',
+          fontSize: 24,
+          valueColor: '#1e3a5f',
+          labelColor: '#7a8fa6'
+        }
       }
     }
   });
@@ -1088,6 +1464,8 @@ function renderChartPrimeiraConsultaDistrito() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   
+  const colors = labels.map((_, i) => PALETTE_ROSA[i % PALETTE_ROSA.length]);
+  
   destroyChart(chartPrimeiraConsultaDistrito);
   chartPrimeiraConsultaDistrito = new Chart(ctx, {
     type: 'bar',
@@ -1096,8 +1474,8 @@ function renderChartPrimeiraConsultaDistrito() {
       datasets: [{
         label: '1ª Consulta',
         data,
-        backgroundColor: 'rgba(46,204,113,0.85)',
-        borderColor: '#27ae60',
+        backgroundColor: colors.map(c => c + 'dd'),
+        borderColor: colors.map(c => c),
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,
@@ -1141,6 +1519,8 @@ function renderChartRetornoDistrito() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   
+  const colors = labels.map((_, i) => PALETTE_ROSA[(i+3) % PALETTE_ROSA.length]);
+  
   destroyChart(chartRetornoDistrito);
   chartRetornoDistrito = new Chart(ctx, {
     type: 'bar',
@@ -1149,8 +1529,8 @@ function renderChartRetornoDistrito() {
       datasets: [{
         label: 'Retorno',
         data,
-        backgroundColor: 'rgba(155,89,182,0.85)',
-        borderColor: '#8e44ad',
+        backgroundColor: colors.map(c => c + 'dd'),
+        borderColor: colors.map(c => c),
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,
@@ -1201,16 +1581,16 @@ function renderChartComparativoDistrito() {
         {
           label: '1ª Consulta',
           data: pcCounts,
-          backgroundColor: 'rgba(46,204,113,0.85)',
-          borderColor: '#27ae60',
+          backgroundColor: '#8a2a48',
+          borderColor: '#8a2a48',
           borderWidth: 2,
           borderRadius: 6,
         },
         {
           label: 'Retorno',
           data: retCounts,
-          backgroundColor: 'rgba(155,89,182,0.85)',
-          borderColor: '#8e44ad',
+          backgroundColor: '#f08cb0',
+          borderColor: '#f08cb0',
           borderWidth: 2,
           borderRadius: 6,
         }
@@ -1262,6 +1642,8 @@ function renderChartDistritoRosca() {
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
   
+  const colors = labels.map((_, i) => PALETTE_ROSA[i % PALETTE_ROSA.length]);
+  
   destroyChart(chartDistritoRosca);
   chartDistritoRosca = new Chart(ctx, {
     type: 'doughnut',
@@ -1269,7 +1651,7 @@ function renderChartDistritoRosca() {
       labels,
       datasets: [{
         data,
-        backgroundColor: ['#e74c3c','#3498db','#e67e22','#2ecc71','#9b59b6','#1abc9c','#f39c12','#e91e63'],
+        backgroundColor: colors,
         borderColor: '#fff',
         borderWidth: 3,
       }]
@@ -1302,8 +1684,8 @@ function renderChartDistritoRosca() {
           value: fmt(total),
           label: 'Total',
           fontSize: 22,
-          valueColor: '#1e3a5f',
-          labelColor: '#7a8fa6'
+          valueColor: '#8a2a48',
+          labelColor: '#c93d70'
         }
       }
     }
@@ -1331,8 +1713,8 @@ function renderChartAbsenteismoEsp() {
     .sort((a,b) => b.pct - a.pct).slice(0, 15);
   const labels = entries.map(e => e.label);
   const data = entries.map(e => e.pct);
-  const bgs = data.map(v => v >= 30 ? 'rgba(192,57,43,0.80)' : v >= 15 ? 'rgba(230,126,34,0.80)' : 'rgba(243,156,18,0.80)');
-  const borders = data.map(v => v >= 30 ? '#c0392b' : v >= 15 ? '#e67e22' : '#f39c12');
+  const bgs = data.map((v, i) => PALETTE_ABSENTEISMO[i % PALETTE_ABSENTEISMO.length] + 'cc');
+  const borders = data.map((v, i) => PALETTE_ABSENTEISMO[i % PALETTE_ABSENTEISMO.length]);
   destroyChart(chartAbsenteismoEsp);
   chartAbsenteismoEsp = new Chart(ctx, {
     type: 'bar',
@@ -1370,8 +1752,8 @@ function renderChartAbsenteismoDist() {
     .sort((a,b) => b.pct - a.pct);
   const labels = entries.map(e => e.label);
   const data = entries.map(e => e.pct);
-  const bgs = data.map(v => v >= 30 ? 'rgba(192,57,43,0.80)' : v >= 15 ? 'rgba(230,126,34,0.80)' : 'rgba(243,156,18,0.80)');
-  const borders = data.map(v => v >= 30 ? '#c0392b' : v >= 15 ? '#e67e22' : '#f39c12');
+  const bgs = data.map((v, i) => PALETTE_ABSENTEISMO[i % PALETTE_ABSENTEISMO.length] + 'cc');
+  const borders = data.map((v, i) => PALETTE_ABSENTEISMO[i % PALETTE_ABSENTEISMO.length]);
   destroyChart(chartAbsenteismoDist);
   chartAbsenteismoDist = new Chart(ctx, {
     type: 'bar',
@@ -1448,7 +1830,7 @@ function renderChartAbsenteismoPrestador() {
   destroyChart(chartAbsenteismoPrestador);
   chartAbsenteismoPrestador = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: '% Absenteísmo', data, backgroundColor: PALETTE_ORANGE.map(c => c + 'cc'), borderColor: PALETTE_ORANGE, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: '% Absenteísmo', data, backgroundColor: PALETTE_ABSENTEISMO.map(c => c + 'cc'), borderColor: PALETTE_ABSENTEISMO, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 10, weight: 'bold' }, formatter: val => val + '%' } },
@@ -1481,7 +1863,7 @@ function renderChartCancelamentosDist() {
   destroyChart(chartCancelamentosDist);
   chartCancelamentosDist = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: '% Cancelamentos', data, backgroundColor: PALETTE_ROSE.map(c => c + 'bb'), borderColor: PALETTE_ROSE, borderWidth: 2, borderRadius: 7, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: '% Cancelamentos', data, backgroundColor: PALETTE_CANCELADOS.map(c => c + 'bb'), borderColor: PALETTE_CANCELADOS, borderWidth: 2, borderRadius: 7, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { ...TOOLTIP_BASE, callbacks: { label: (ctx) => { const e = entries[ctx.dataIndex]; return [` ${ctx.raw}% cancelados`, ` ${fmt(e.can)} cancelamentos de ${fmt(e.total)} registros`]; } } }, datalabels: { anchor: 'end', align: 'end', clamp: true, color: '#1a2a3a', font: { family: 'Inter', size: 11, weight: 'bold' }, formatter: val => val + '%' } },
@@ -1507,7 +1889,7 @@ function renderChartCancelamentosEsp() {
   destroyChart(chartCancelamentosEsp);
   chartCancelamentosEsp = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: '% Cancelamentos', data, backgroundColor: PALETTE_GRAPE.map(c => c + 'bb'), borderColor: PALETTE_GRAPE, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: '% Cancelamentos', data, backgroundColor: PALETTE_CANCELADOS.map(c => c + 'bb'), borderColor: PALETTE_CANCELADOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { ...TOOLTIP_BASE, callbacks: { label: (ctx) => { const e = entries[ctx.dataIndex]; return [` ${ctx.raw}% cancelados`, ` ${fmt(e.can)} cancelamentos de ${fmt(e.total)} registros`]; } } }, datalabels: { anchor: 'end', align: 'end', clamp: true, color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => val + '%' } },
@@ -1533,7 +1915,7 @@ function renderChartCancelamentosPrestador() {
   destroyChart(chartCancelamentosPrestador);
   chartCancelamentosPrestador = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: '% Cancelamentos', data, backgroundColor: PALETTE_ROSE.map(c => c + 'cc'), borderColor: PALETTE_ROSE, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: '% Cancelamentos', data, backgroundColor: PALETTE_CANCELADOS.map(c => c + 'cc'), borderColor: PALETTE_CANCELADOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 10, weight: 'bold' }, formatter: val => val + '%' } },
@@ -1591,7 +1973,7 @@ function renderChartRecepcionadosDistrito() {
   destroyChart(chartRecepcionadosDistrito);
   chartRecepcionadosDistrito = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: 'rgba(41,128,185,0.85)', borderColor: '#2980b9', borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'bb'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' } },
@@ -1611,7 +1993,7 @@ function renderChartRecepcionadosEspecialidade() {
   destroyChart(chartRecepcionadosEspecialidade);
   chartRecepcionadosEspecialidade = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_PURPLE.map(c => c + 'dd'), borderColor: PALETTE_PURPLE, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'dd'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
@@ -1632,7 +2014,7 @@ function renderChartRecepcionadosPrestador() {
   destroyChart(chartRecepcionadosPrestador);
   chartRecepcionadosPrestador = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_BLUE.map(c => c + 'dd'), borderColor: PALETTE_BLUE, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'dd'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
@@ -1689,7 +2071,7 @@ function renderChartTransferidosDistrito() {
   destroyChart(chartTransferidosDistrito);
   chartTransferidosDistrito = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Transferidos', data, backgroundColor: 'rgba(155,89,182,0.85)', borderColor: '#8e44ad', borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: 'Transferidos', data, backgroundColor: PALETTE_TRANSFERIDOS.map(c => c + 'bb'), borderColor: PALETTE_TRANSFERIDOS, borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' } },
@@ -1709,7 +2091,7 @@ function renderChartTransferidosEspecialidade() {
   destroyChart(chartTransferidosEspecialidade);
   chartTransferidosEspecialidade = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Transferidos', data, backgroundColor: PALETTE_GRAPE.map(c => c + 'dd'), borderColor: PALETTE_GRAPE, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: 'Transferidos', data, backgroundColor: PALETTE_TRANSFERIDOS.map(c => c + 'dd'), borderColor: PALETTE_TRANSFERIDOS, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
@@ -1730,7 +2112,7 @@ function renderChartTransferidosPrestador() {
   destroyChart(chartTransferidosPrestador);
   chartTransferidosPrestador = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ label: 'Transferidos', data, backgroundColor: PALETTE_TEAL.map(c => c + 'dd'), borderColor: PALETTE_TEAL, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    data: { labels, datasets: [{ label: 'Transferidos', data, backgroundColor: PALETTE_TRANSFERIDOS.map(c => c + 'dd'), borderColor: PALETTE_TRANSFERIDOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
@@ -1795,7 +2177,8 @@ function buildTableData() {
     else if (sit === 'TRA') map[key].tra++;
   });
   tableData = Object.values(map).map(r => {
-    const totalAgendamentos = r.rec + r.fal + r.can;
+    // CORREÇÃO: Total Agendamentos = REC + FAL (para bater com os cards KPI)
+    const totalAgendamentos = r.rec + r.fal;
     const pctAbsenteismo = totalAgendamentos > 0 ? parseFloat((r.fal / totalAgendamentos * 100).toFixed(1)) : 0;
     return { ...r, totalAgendamentos, pctAbsenteismo };
   }).sort((a,b) => b.totalAgendamentos - a.totalAgendamentos);
@@ -1957,7 +2340,7 @@ function exportExcel() {
         'FAL (Faltosos)': r.fal,
         'CAN (Cancelados)': r.can,
         'TRA (Transferidos)': r.tra,
-        'Total Agendamentos (REC+FAL+CAN)': r.totalAgendamentos,
+        'Total Agendamentos (REC+FAL)': r.totalAgendamentos,
         '% Absenteísmo': r.pctAbsenteismo + '%',
       }));
       const wb = XLSX.utils.book_new();
