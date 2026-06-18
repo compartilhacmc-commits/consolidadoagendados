@@ -162,18 +162,38 @@ const PALETTE_AZUL = [
 
 // AGENDAMENTOS POR DISTRITO - ROSA/PINK
 const PALETTE_ROSA = [
-  '#1a0a0a', '#2d1015', '#3d1520', '#4d1a2a',
-  '#6b2038', '#8a2a48', '#a83258', '#c93d70',
-  '#e04a82', '#ea6a9a', '#f08cb0', '#f5b0c8',
-  '#fad0df', '#fce8f0'
+  '#4a0d2f',
+  '#641240',
+  '#7f1852',
+  '#9a1e64',
+  '#b42476',
+  '#cb3388',
+  '#de4b99',
+  '#e966a9',
+  '#f181b9',
+  '#f69cc9',
+  '#fab7d8',
+  '#fdd1e7',
+  '#fee5f2',
+  '#fff3f8'
 ];
 
 // ABSENTEÍSMO - VERMELHO
 const PALETTE_ABSENTEISMO = [
-  '#1a0a0a', '#2d1010', '#3d1515', '#4d1a1a',
-  '#6b2020', '#8a2a2a', '#a83232', '#c93d3d',
-  '#e04a4a', '#ea6a6a', '#f08c8c', '#f5b0b0',
-  '#fad0d0', '#fce8e8'
+  '#7c2d12',
+  '#9a3412',
+  '#c2410c',
+  '#ea580c',
+  '#f97316',
+  '#fb923c',
+  '#fdba74',
+  '#fed7aa',
+  '#ffedd5',
+  '#fff7ed',
+  '#fffaf5',
+  '#fffcfa',
+  '#fffefd',
+  '#ffffff'
 ];
 
 // RECEPCIONADOS - VERDE
