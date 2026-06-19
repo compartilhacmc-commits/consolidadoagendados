@@ -265,7 +265,8 @@
     <section class="tabs-section">
       <nav class="tabs-nav" id="tabsNav">
         <button class="tab-btn active" data-tab="visao-geral"><i class="fas fa-chart-pie"></i> Visão Geral</button>
-        <button class="tab-btn" data-tab="tabela"><i class="fas fa-table"></i> Tabela</button>
+        <button class="tab-btn" data-tab="tabela"><i class="fas fa-table"></i> Consolidado Detalhado</button>
+        <button class="tab-btn" data-tab="profissionais-atendimento"><i class="fas fa-clipboard-list"></i> Consolidado por Profissional</button>
         <button class="tab-btn" data-tab="agendamentos-distrito"><i class="fas fa-map-marker-alt"></i> Agendamentos por Distrito</button>
         <button class="tab-btn" data-tab="absenteismo"><i class="fas fa-user-times"></i> Absenteísmo</button>
         <button class="tab-btn" data-tab="recepcionados"><i class="fas fa-user-check"></i> Recepcionados</button>
@@ -291,7 +292,7 @@
           </section>
         </div>
 
-        <!-- ABA TABELA -->
+        <!-- ABA CONSOLIDADO DETALHADO -->
         <div class="tab-panel" id="tab-tabela">
           <section class="table-section card">
             <div class="table-header">
@@ -313,6 +314,49 @@
             <div class="table-footer"><span id="tablePaginationInfo">Mostrando 0 registros</span><div class="pagination" id="pagination"></div></div>
           </section>
         </div>
+
+    <!-- ABA CONSOLIDADO PROFISSIONAIS DE ATENDIMENTO -->
+    <div class="tab-panel" id="tab-profissionais-atendimento">
+    <section class="table-section card">
+    <div class="table-header">
+      <div class="table-title-group"><i class="fas fa-clipboard-list"></i><h4>CONSOLIDADO PROFISSIONAIS POR ATENDIMENTO</h4></div>
+      <div class="table-controls">
+        <div class="search-box"><i class="fas fa-search"></i><input type="text" id="tableSearchResumido" placeholder="Buscar..." oninput="filterTableResumido()" /></div>
+         <select id="tablePageSizeResumido" class="filter-select small-select" onchange="renderTableResumido()">
+              <option value="15" selected>15</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="500">500</option>
+              <option value="1000">1000</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="data-table" id="resumidoTable">
+        <thead><tr>
+          <th onclick="sortTableResumido(1)">Unidade Executante <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(2)">Tipo Serviço <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(3)">CBO/Especialidade <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(4)">Profissional <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(5)" class="text-center">AGE <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(6)" class="text-center">REC <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(7)" class="text-center">FAL <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(8)" class="text-center">CAN <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(9)" class="text-center">TRA <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(10)" class="text-center">Total <i class="fas fa-sort"></i></th>
+          <th onclick="sortTableResumido(11)" class="text-center">% Absent. <i class="fas fa-sort"></i></th>
+        </tr></thead>
+        <tbody id="tableBodyResumido"><tr><td colspan="11" class="empty-msg">Aguardando dados...</td></tr></tbody>
+        <tfoot id="tableFootResumido"></tfoot>
+      </table>
+    </div>
+    <div class="table-footer">
+      <span id="tablePaginationInfoResumido">Mostrando 0 registros</span>
+      <div class="pagination" id="paginationResumido"></div>
+    </div>
+  </section>
+</div>
 
         <!-- ABA AGENDAMENTOS POR DISTRITO -->
         <div class="tab-panel" id="tab-agendamentos-distrito">
@@ -386,4 +430,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
