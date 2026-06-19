@@ -36,7 +36,7 @@ const SHEET_ID  = '14DiFK9EW36s8ntkukyhiRMJxcX0ghG5XTzWb1TwpI2Q';
 const SHEET_GID = '0';
 const CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 const CACHE_KEY = 'cmcDashboardData_v2';
-const CACHE_EXPIRY_HOURS = 0.5; // ← 30 MINUTOS (meia hora)
+const CACHE_EXPIRY_HOURS = 0.5;
 
 // ============================================================
 // MAPEAMENTO DE OPERADORES
@@ -149,10 +149,8 @@ const MESES_PT  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
                    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 // ============================================================
-// PALETAS DE CORES - MONOCROMÁTICAS (MAIS ELEGANTES)
+// PALETAS DE CORES
 // ============================================================
-
-// VISÃO GERAL - AZUL
 const PALETTE_AZUL = [
   '#0a1628', '#0f1f3a', '#142844', '#1a3256',
   '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
@@ -160,43 +158,20 @@ const PALETTE_AZUL = [
   '#d4edfd', '#eaf6ff'
 ];
 
-// AGENDAMENTOS POR DISTRITO - ROSA/PINK
 const PALETTE_ROSA = [
-  '#4a0d2f',
-  '#641240',
-  '#7f1852',
-  '#9a1e64',
-  '#b42476',
-  '#cb3388',
-  '#de4b99',
-  '#e966a9',
-  '#f181b9',
-  '#f69cc9',
-  '#fab7d8',
-  '#fdd1e7',
-  '#fee5f2',
-  '#fff3f8'
+  '#4a0d2f', '#641240', '#7f1852', '#9a1e64',
+  '#b42476', '#cb3388', '#de4b99', '#e966a9',
+  '#f181b9', '#f69cc9', '#fab7d8', '#fdd1e7',
+  '#fee5f2', '#fff3f8'
 ];
 
-// ABSENTEÍSMO - VERMELHO
 const PALETTE_ABSENTEISMO = [
-  '#7c2d12',
-  '#9a3412',
-  '#c2410c',
-  '#ea580c',
-  '#f97316',
-  '#fb923c',
-  '#fdba74',
-  '#fed7aa',
-  '#ffedd5',
-  '#fff7ed',
-  '#fffaf5',
-  '#fffcfa',
-  '#fffefd',
-  '#ffffff'
+  '#7c2d12', '#9a3412', '#c2410c', '#ea580c',
+  '#f97316', '#fb923c', '#fdba74', '#fed7aa',
+  '#ffedd5', '#fff7ed', '#fffaf5', '#fffcfa',
+  '#fffefd', '#ffffff'
 ];
 
-// RECEPCIONADOS - VERDE
 const PALETTE_RECEPCIONADOS = [
   '#0a1a10', '#0f2618', '#143020', '#1a3d28',
   '#1f4d30', '#26603a', '#2e7042', '#3a8a52',
@@ -204,7 +179,6 @@ const PALETTE_RECEPCIONADOS = [
   '#c8f0d4', '#e8f8ec'
 ];
 
-// CANCELADOS - VERMELHO ESCURO
 const PALETTE_CANCELADOS = [
   '#1a0a0a', '#2d1010', '#3d1515', '#4d1a1a',
   '#6b2020', '#8a2a2a', '#a83232', '#c93d3d',
@@ -212,7 +186,6 @@ const PALETTE_CANCELADOS = [
   '#fad0d0', '#fce8e8'
 ];
 
-// TRANSFERIDOS - ROXO
 const PALETTE_TRANSFERIDOS = [
   '#140a1a', '#1e0f28', '#281430', '#321a3d',
   '#3d1f4d', '#4a2660', '#582e70', '#6a3a8a',
@@ -220,14 +193,6 @@ const PALETTE_TRANSFERIDOS = [
   '#e0c8f0', '#f0e8f8'
 ];
 
-// MESES (doughnut) - AZUL com variação
-const PALETTE_MONTHS = [
-  '#0a1628', '#0f1f3a', '#142844', '#1a3256',
-  '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
-  '#4a90d9', '#6aaff0', '#8fc7f5', '#b5dffa'
-];
-
-// TOOLTIP BASE
 const TOOLTIP_BASE = {
   backgroundColor: 'rgba(20,40,68,0.92)',
   titleFont:  { family: 'Inter', size: 12, weight: '700' },
@@ -247,7 +212,13 @@ let currentPage   = 1;
 let sortColIdx    = -1;
 let sortAscFlag   = true;
 
-// Multiselect state
+// Estado da tabela resumida (CONSOLIDADO PROFISSIONAIS POR ATENDIMENTO)
+let tableDataResumido = [];
+let tableSearchedResumido = [];
+let currentPageResumido = 1;
+let sortColIdxResumido = -1;
+let sortAscFlagResumido = true;
+
 const multiSelectState = {};
 
 // Instâncias dos gráficos
@@ -360,6 +331,17 @@ function isSameDay(d1, d2) {
   return d1.getFullYear() === d2.getFullYear() &&
          d1.getMonth()    === d2.getMonth()    &&
          d1.getDate()     === d2.getDate();
+}
+
+function compareDate(selectedDate, rowDate) {
+  if (!selectedDate || !rowDate) return false;
+  const d1 = selectedDate.getFullYear() + '-' + 
+             String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+             String(selectedDate.getDate()).padStart(2, '0');
+  const d2 = rowDate.getFullYear() + '-' + 
+             String(rowDate.getMonth() + 1).padStart(2, '0') + '-' + 
+             String(rowDate.getDate()).padStart(2, '0');
+  return d1 === d2;
 }
 
 // ============================================================
@@ -518,6 +500,9 @@ function renderChartsForTab(tabId) {
     case 'tabela':
       renderTable();
       break;
+    case 'profissionais-atendimento':
+      renderTableResumido();
+      break;
     case 'agendamentos-distrito':
       renderChartPrimeiraConsultaDistrito();
       renderChartRetornoDistrito();
@@ -574,7 +559,7 @@ function destroyAllCharts() {
 }
 
 // ============================================================
-// CARREGAR DADOS COM CACHE DE CURTA DURAÇÃO
+// CARREGAR DADOS
 // ============================================================
 async function loadData(forceRefresh = false) {
   const btnRefresh = document.getElementById('btnRefresh');
@@ -586,11 +571,10 @@ async function loadData(forceRefresh = false) {
   setStatus('Carregando...', false);
 
   try {
-    // Se for forceRefresh (botão Atualizar), IGNORA o cache completamente
     if (!forceRefresh) {
       const cached = getCachedData();
       if (cached) {
-        console.log('📦 Dados carregados do cache (válido por 30 minutos).');
+        console.log('📦 Dados carregados do cache.');
         allData = cached.data;
         onDataLoaded();
         setStatus('Conectado (cache)', true);
@@ -598,13 +582,11 @@ async function loadData(forceRefresh = false) {
         showLoading(false);
         if (icon) icon.classList.remove('spinning');
         if (btnRefresh) btnRefresh.disabled = false;
-        // Busca em segundo plano para atualizar se houver mudanças
         fetchDataInBackground();
         return;
       }
     }
 
-    // Busca dados novos (forçado ou cache expirado)
     console.log('🔄 Buscando dados novos da planilha...');
     const freshData = await fetchFreshData();
     if (freshData && freshData.length > 0) {
@@ -614,24 +596,22 @@ async function loadData(forceRefresh = false) {
       onDataLoaded();
       setStatus('Conectado', true);
       updateLastUpdate(new Date());
-      console.log(`✅ ${freshData.length} registros carregados com sucesso!`);
+      console.log(`✅ ${freshData.length} registros carregados!`);
     } else {
       throw new Error('Falha ao buscar dados da planilha.');
     }
   } catch (err) {
     console.error('❌ Erro ao carregar dados:', err);
     
-    // Tenta usar cache expirado como fallback
     const expiredCache = getCachedData(true);
     if (expiredCache && expiredCache.data && expiredCache.data.length > 0) {
       allData = expiredCache.data;
       onDataLoaded();
       setStatus('⚠️ Usando cache antigo (offline)', false);
       updateLastUpdate(new Date(expiredCache.timestamp));
-      showError('Não foi possível atualizar. Usando dados em cache. Clique em "Atualizar" para tentar novamente.');
+      showError('Não foi possível atualizar. Usando dados em cache.');
     } else {
-      showError('❌ Erro ao carregar dados. Verifique sua conexão com a internet.');
-      // Mostra mensagem na tela
+      showError('❌ Erro ao carregar dados. Verifique sua conexão.');
       const msg = document.getElementById('statusText');
       if (msg) msg.textContent = '⚠️ Sem conexão com a planilha';
     }
@@ -642,16 +622,11 @@ async function loadData(forceRefresh = false) {
   }
 }
 
-// ============================================================
-// BUSCAR DADOS DA PLANILHA - VERSÃO CORRIGIDA (SEM CORS)
-// ============================================================
 async function fetchFreshData() {
   try {
-    // USANDO A URL ALTERNATIVA QUE FUNCIONA COM CORS
     const url = CSV_URL + '&t=' + Date.now();
     console.log('📡 Fazendo requisição para:', url);
     
-    // REMOVI todos os cabeçalhos personalizados que causavam CORS
     const response = await fetch(url);
     
     if (!response.ok) {
@@ -665,11 +640,9 @@ async function fetchFreshData() {
       throw new Error('Resposta vazia da planilha');
     }
 
-    // Verifica se a resposta é um CSV válido
     const firstLine = text.split('\n')[0];
     if (!firstLine || !firstLine.includes(',')) {
-      console.warn('⚠️ Possível erro na resposta. Primeira linha:', firstLine);
-      // Tenta limpar a resposta se tiver lixo no início
+      console.warn('⚠️ Possível erro na resposta.');
       const cleanedText = text.replace(/^[^{]*\{[^}]*\}\s*/, '');
       if (cleanedText !== text) {
         console.log('🔄 Texto limpo, tentando novamente...');
@@ -685,9 +658,6 @@ async function fetchFreshData() {
   }
 }
 
-// ============================================================
-// FUNÇÃO AUXILIAR PARA PARSE DO CSV
-// ============================================================
 function parseCSV(text) {
   return new Promise((resolve, reject) => {
     Papa.parse(text, {
@@ -711,32 +681,25 @@ function parseCSV(text) {
   });
 }
 
-// ============================================================
-// ATUALIZAÇÃO EM SEGUNDO PLANO
-// ============================================================
 async function fetchDataInBackground() {
   try {
     console.log('🔄 Atualização em segundo plano iniciada...');
     const freshData = await fetchFreshData();
     if (freshData && freshData.length > 0) {
-      // Compara com os dados atuais para ver se houve mudança
       const currentDataStr = JSON.stringify(allData);
       const newDataStr = JSON.stringify(freshData);
       
       if (currentDataStr !== newDataStr) {
-        console.log('🔄 Dados foram atualizados em segundo plano!');
+        console.log('🔄 Dados atualizados em segundo plano!');
         allData = freshData;
         const timestamp = new Date().toISOString();
         setCachedData(allData, timestamp);
         onDataLoaded();
         setStatus('🔄 Dados atualizados!', true);
         updateLastUpdate(new Date());
-        
-        // Notifica o usuário
         showToast('📊 Dados da planilha foram atualizados!');
       } else {
         console.log('✅ Dados já estão atualizados.');
-        // Atualiza o timestamp do cache
         setCachedData(allData, new Date().toISOString());
       }
     }
@@ -745,19 +708,14 @@ async function fetchDataInBackground() {
   }
 }
 
-// ============================================================
-// CACHE COM LOCALSTORAGE - COM VERIFICAÇÃO DE TAMANHO
-// ============================================================
 function setCachedData(data, timestamp) {
   try {
-    // Verifica o tamanho dos dados
     const dataStr = JSON.stringify(data);
     const sizeInMB = (dataStr.length * 2) / (1024 * 1024);
     console.log(`📊 Tamanho dos dados: ${sizeInMB.toFixed(2)} MB`);
     
-    // Só salva se for menor que 4MB (evita erro QuotaExceededError)
     if (sizeInMB > 4) {
-      console.warn('⚠️ Dados muito grandes para cache (>4MB). Pulando cache.');
+      console.warn('⚠️ Dados muito grandes para cache (>4MB).');
       return;
     }
     
@@ -798,12 +756,12 @@ function getCachedData(ignoreExpiry = false) {
     
     console.log(`⏱️ Cache tem ${hoursDiff.toFixed(1)} horas de idade`);
     
-    if (hoursDiff <= 0.5) { // 30 minutos
+    if (hoursDiff <= 0.5) {
       console.log(`✅ Cache válido: ${cacheObject.data.length} registros`);
       return cacheObject;
     }
     
-    console.log('⏰ Cache expirado. Buscando dados novos...');
+    console.log('⏰ Cache expirado.');
     return null;
   } catch (e) {
     console.warn('⚠️ Erro ao ler cache:', e);
@@ -811,9 +769,6 @@ function getCachedData(ignoreExpiry = false) {
   }
 }
 
-// ============================================================
-// NOVA FUNÇÃO: TOAST DE NOTIFICAÇÃO
-// ============================================================
 function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   const colors = {
@@ -860,7 +815,6 @@ function showToast(message, type = 'info') {
   }, 5000);
 }
 
-// Adiciona o estilo da animação
 const style = document.createElement('style');
 style.textContent = `
   @keyframes slideUp {
@@ -870,9 +824,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// ============================================================
-// PROCESSAMENTO PÓS-CARGA
-// ============================================================
 function onDataLoaded() {
   populateMultiSelectOptions();
   applyFilters();
@@ -1011,14 +962,16 @@ function applyFilters() {
     
     if (dataCriacaoSelecionada) {
       if (!r.dataCriacaoParsed) return false;
-      if (!isSameDay(r.dataCriacaoParsed, dataCriacaoSelecionada)) return false;
+      if (!compareDate(dataCriacaoSelecionada, r.dataCriacaoParsed)) return false;
     }
     return true;
   });
 
   updateKPIs();
   buildTableData();
+  buildTableDataResumido();
   currentPage = 1;
+  currentPageResumido = 1;
 
   const activeTab = document.querySelector('.tab-btn.active');
   if (activeTab) {
@@ -1030,6 +983,11 @@ function applyFilters() {
   const tabelaPanel = document.getElementById('tab-tabela');
   if (tabelaPanel && tabelaPanel.classList.contains('active')) {
     renderTable();
+  }
+  
+  const resumidoPanel = document.getElementById('tab-profissionais-atendimento');
+  if (resumidoPanel && resumidoPanel.classList.contains('active')) {
+    renderTableResumido();
   }
 }
 
@@ -1093,7 +1051,7 @@ function sortedEntries(obj, limit = 0) {
 function destroyChart(ref) { if (ref) { try { ref.destroy(); } catch(e) {} } }
 
 // ============================================================
-// GRÁFICOS - VISÃO GERAL
+// TODOS OS GRÁFICOS (MANTIDOS IGUAIS)
 // ============================================================
 
 function renderChartDistrito() {
@@ -1104,8 +1062,6 @@ function renderChartDistrito() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
-  
-  // CORES EM AZUL (tom mais escuro para o mais claro)
   const colors = labels.map((_, i) => PALETTE_AZUL[i % PALETTE_AZUL.length]);
   
   destroyChart(chartDistrito);
@@ -1217,7 +1173,6 @@ function renderChartEspecialidade() {
   const entries = sortedEntries(counts, 15);
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
-  
   const colors = labels.map((_, i) => PALETTE_AZUL[i % PALETTE_AZUL.length]);
   
   destroyChart(chartEspecialidade);
@@ -1280,7 +1235,6 @@ function renderChartPrestador() {
   const entries = sortedEntries(counts, 10);
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
-  
   const colors = labels.map((_, i) => PALETTE_AZUL[(i+3) % PALETTE_AZUL.length]);
   
   destroyChart(chartPrestador);
@@ -1347,8 +1301,6 @@ function renderChartSituacao() {
   const labels = ['Agendados', 'Recepcionados', 'Faltosos', 'Cancelados', 'Transferidos'];
   const data = [age, rec, fal, can, tra];
   const total = data.reduce((a,b) => a+b, 0);
-  
-  // AZUL escuro para os primeiros, mais claro para os últimos
   const coresAzul = ['#0a1628', '#1a3256', '#2d5494', '#4a90d9', '#6aaff0'];
   
   destroyChart(chartSituacao);
@@ -1411,8 +1363,6 @@ function renderChartMeses() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
-  
-  // AZUL do mais escuro para o mais claro (12 meses)
   const coresAzul = [
     '#0a1628', '#0f1f3a', '#142844', '#1a3256',
     '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
@@ -1483,7 +1433,6 @@ function renderChartPrimeiraConsultaDistrito() {
   const entries = sortedEntries(counts);
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
-  
   const colors = labels.map((_, i) => PALETTE_ROSA[i % PALETTE_ROSA.length]);
   
   destroyChart(chartPrimeiraConsultaDistrito);
@@ -1538,7 +1487,6 @@ function renderChartRetornoDistrito() {
   const entries = sortedEntries(counts);
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
-  
   const colors = labels.map((_, i) => PALETTE_ROSA[(i+3) % PALETTE_ROSA.length]);
   
   destroyChart(chartRetornoDistrito);
@@ -1661,7 +1609,6 @@ function renderChartDistritoRosca() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
-  
   const colors = labels.map((_, i) => PALETTE_ROSA[i % PALETTE_ROSA.length]);
   
   destroyChart(chartDistritoRosca);
@@ -2175,7 +2122,7 @@ function renderChartTransferidosMensal() {
 }
 
 // ============================================================
-// TABELA CONSOLIDADA
+// TABELA CONSOLIDADA (ORIGINAL)
 // ============================================================
 function buildTableData() {
   const map = {};
@@ -2197,7 +2144,6 @@ function buildTableData() {
     else if (sit === 'TRA') map[key].tra++;
   });
   tableData = Object.values(map).map(r => {
-    // CORREÇÃO: Total Agendamentos = REC + FAL (para bater com os cards KPI)
     const totalAgendamentos = r.rec + r.fal;
     const pctAbsenteismo = totalAgendamentos > 0 ? parseFloat((r.fal / totalAgendamentos * 100).toFixed(1)) : 0;
     return { ...r, totalAgendamentos, pctAbsenteismo };
@@ -2325,6 +2271,181 @@ function goPage(p) {
 }
 
 // ============================================================
+// TABELA CONSOLIDADO PROFISSIONAIS POR ATENDIMENTO (SEM DISTRITO)
+// ============================================================
+
+function buildTableDataResumido() {
+  console.log('🔄 Construindo tabela consolidado profissionais...');
+  const map = {};
+  
+  if (!filteredData || filteredData.length === 0) {
+    console.warn('⚠️ Nenhum dado filtrado para construir a tabela.');
+    tableDataResumido = [];
+    tableSearchedResumido = [];
+    return;
+  }
+  
+  filteredData.forEach(r => {
+    // Agrupa SEM Distrito: Unidade Executante + Tipo Serviço + CBO + Profissional
+    const key = `${r.unidadeExecutante}|||${r.tipoAtendimento}|||${r.cbo}|||${r.profissional}`;
+    if (!map[key]) {
+      map[key] = {
+        unidadeExecutante: r.unidadeExecutante || 'NÃO INFORMADO',
+        tipoServico: r.tipoAtendimento || 'NÃO INFORMADO',
+        cbo: r.cbo || 'NÃO INFORMADO',
+        profissional: r.profissional || 'NÃO INFORMADO',
+        age: 0, rec: 0, fal: 0, can: 0, tra: 0,
+      };
+    }
+    const sit = r.situacao;
+    if (sit === 'AGE') map[key].age++;
+    else if (sit === 'REC') map[key].rec++;
+    else if (sit === 'FAL') map[key].fal++;
+    else if (sit === 'CAN') map[key].can++;
+    else if (sit === 'TRA') map[key].tra++;
+  });
+  
+  tableDataResumido = Object.values(map).map(r => {
+    const totalAgendamentos = r.rec + r.fal;
+    const pctAbsenteismo = totalAgendamentos > 0 ? parseFloat((r.fal / totalAgendamentos * 100).toFixed(1)) : 0;
+    return { ...r, totalAgendamentos, pctAbsenteismo };
+  }).sort((a,b) => b.totalAgendamentos - a.totalAgendamentos);
+  
+  tableSearchedResumido = [...tableDataResumido];
+  console.log(`✅ ${tableDataResumido.length} registros na tabela consolidado profissionais`);
+}
+
+function renderTableResumido() {
+  console.log('🔄 Renderizando tabela consolidado profissionais...');
+  
+  const tbody = document.getElementById('tableBodyResumido');
+  const tfoot = document.getElementById('tableFootResumido');
+  
+  if (!tbody) {
+    console.error('❌ Elemento tableBodyResumido não encontrado!');
+    return;
+  }
+  
+  if (!tableSearchedResumido || tableSearchedResumido.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" class="empty-msg">Nenhum registro encontrado.</td></tr>';
+    if (tfoot) tfoot.innerHTML = '';
+    const infoEl = document.getElementById('tablePaginationInfoResumido');
+    if (infoEl) infoEl.textContent = 'Mostrando 0 registros';
+    return;
+  }
+  
+  // PADRÃO 25 REGISTROS (como você disse que funciona)
+  const pageSize = parseInt(document.getElementById('tablePageSizeResumido')?.value || 25);
+  const total = tableSearchedResumido.length;
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+  if (currentPageResumido > pages) currentPageResumido = pages;
+  const start = (currentPageResumido - 1) * pageSize;
+  const slice = tableSearchedResumido.slice(start, start + pageSize);
+  
+  tbody.innerHTML = slice.map(r => `
+    <tr>
+      <td style="font-size:0.78rem;color:#3d5166;">${r.unidadeExecutante || '–'}</td>
+      <td><span style="font-size:0.76rem;font-weight:600;color:${r.tipoServico === 'Primeira Consulta' ? '#1a7a3f' : '#7d3c98'}">${r.tipoServico || '–'}</span></td>
+      <td><div style="font-weight:600;color:#1e3a5f;font-size:0.8rem;">${r.cbo || '–'}</div></td>
+      <td style="font-size:0.78rem;color:#3d5166;">${r.profissional || '–'}</td>
+      <td class="text-center"><span class="badge-num badge-age">${fmt(r.age)}</span></td>
+      <td class="text-center"><span class="badge-num badge-rec">${fmt(r.rec)}</span></td>
+      <td class="text-center"><span class="badge-num badge-fal">${fmt(r.fal)}</span></td>
+      <td class="text-center"><span class="badge-num badge-can">${fmt(r.can)}</span></td>
+      <td class="text-center"><span class="badge-num badge-tra">${fmt(r.tra)}</span></td>
+      <td class="text-center"><span class="badge-num badge-total">${fmt(r.totalAgendamentos)}</span></td>
+      <td class="text-center"><span class="${absentClass(r.pctAbsenteismo)}">${r.pctAbsenteismo.toFixed(1)}%</span></td>
+    </tr>
+  `).join('');
+  
+  if (tfoot) {
+    const sAge = tableSearchedResumido.reduce((s,r) => s + r.age, 0);
+    const sRec = tableSearchedResumido.reduce((s,r) => s + r.rec, 0);
+    const sFal = tableSearchedResumido.reduce((s,r) => s + r.fal, 0);
+    const sCan = tableSearchedResumido.reduce((s,r) => s + r.can, 0);
+    const sTra = tableSearchedResumido.reduce((s,r) => s + r.tra, 0);
+    const sTotal = tableSearchedResumido.reduce((s,r) => s + r.totalAgendamentos, 0);
+    const pctGeral = sTotal > 0 ? parseFloat((sFal / sTotal * 100).toFixed(1)) : 0;
+    
+    tfoot.innerHTML = `
+      <tr>
+        <td colspan="4"><i class="fas fa-calculator" style="margin-right:6px;"></i>TOTAL GERAL (${fmt(tableSearchedResumido.length)} linhas)</td>
+        <td class="text-center">${fmt(sAge)}</td>
+        <td class="text-center">${fmt(sRec)}</td>
+        <td class="text-center">${fmt(sFal)}</td>
+        <td class="text-center">${fmt(sCan)}</td>
+        <td class="text-center">${fmt(sTra)}</td>
+        <td class="text-center">${fmt(sTotal)}</td>
+        <td class="text-center">${pctGeral.toFixed(1)}%</td>
+      </tr>
+    `;
+  }
+  
+  const infoEl = document.getElementById('tablePaginationInfoResumido');
+  if (infoEl) {
+    infoEl.textContent = `Mostrando ${total === 0 ? 0 : start+1} a ${Math.min(start+pageSize, total)} de ${fmt(total)} registros`;
+  }
+  renderPaginationResumido(currentPageResumido, pages);
+}
+
+function filterTableResumido() {
+  const q = (document.getElementById('tableSearchResumido')?.value || '').toLowerCase();
+  tableSearchedResumido = !q ? [...tableDataResumido] : tableDataResumido.filter(r =>
+    (r.unidadeExecutante||'').toLowerCase().includes(q) ||
+    (r.tipoServico||'').toLowerCase().includes(q) ||
+    (r.cbo||'').toLowerCase().includes(q) ||
+    (r.profissional||'').toLowerCase().includes(q)
+  );
+  currentPageResumido = 1;
+  renderTableResumido();
+}
+
+function sortTableResumido(col) {
+  if (sortColIdxResumido === col) sortAscFlagResumido = !sortAscFlagResumido;
+  else { sortColIdxResumido = col; sortAscFlagResumido = true; }
+  const keys = ['unidadeExecutante','tipoServico','cbo','profissional','age','rec','fal','can','tra','totalAgendamentos','pctAbsenteismo'];
+  const key = keys[col - 1]; // Ajuste porque removemos a coluna Distrito
+  if (!key) return;
+  tableSearchedResumido.sort((a,b) => {
+    const va = a[key] ?? '';
+    const vb = b[key] ?? '';
+    const cmp = typeof va === 'number' ? va - vb : va.toString().localeCompare(vb.toString(), 'pt-BR');
+    return sortAscFlagResumido ? cmp : -cmp;
+  });
+  renderTableResumido();
+}
+
+function renderPaginationResumido(cur, total) {
+  const container = document.getElementById('paginationResumido');
+  if (!container) return;
+  let html = `<button class="page-btn" onclick="goPageResumido(${cur-1})" ${cur===1?'disabled':''}>‹</button>`;
+  let pages = [];
+  if (total <= 7) {
+    for (let i=1; i<=total; i++) pages.push(i);
+  } else {
+    pages = [1];
+    if (cur > 3) pages.push('...');
+    for (let i=Math.max(2,cur-1); i<=Math.min(total-1,cur+1); i++) pages.push(i);
+    if (cur < total-2) pages.push('...');
+    pages.push(total);
+  }
+  pages.forEach(p => {
+    if (p === '...') html += `<button class="page-btn" disabled>…</button>`;
+    else html += `<button class="page-btn ${p===cur?'active':''}" onclick="goPageResumido(${p})">${p}</button>`;
+  });
+  html += `<button class="page-btn" onclick="goPageResumido(${cur+1})" ${cur===total?'disabled':''}>›</button>`;
+  container.innerHTML = html;
+}
+
+function goPageResumido(p) {
+  const pageSize = parseInt(document.getElementById('tablePageSizeResumido')?.value || 25);
+  const pages = Math.max(1, Math.ceil(tableSearchedResumido.length / pageSize));
+  if (p < 1 || p > pages) return;
+  currentPageResumido = p;
+  renderTableResumido();
+}
+
+// ============================================================
 // EXPORTAR EXCEL
 // ============================================================
 function exportExcel() {
@@ -2434,6 +2555,60 @@ function initDatePickers() {
     onChange: () => applyFilters()
   });
 }
+
+// ============================================================
+// FORÇAR RENDERIZAÇÃO DA TABELA CONSOLIDADO PROFISSIONAIS
+// ============================================================
+
+function fixResumidoTab() {
+  console.log('🔧 Aplicando correção da aba resumida...');
+  
+  const resumidoPanel = document.getElementById('tab-profissionais-atendimento');
+  if (resumidoPanel && resumidoPanel.classList.contains('active')) {
+    console.log('✅ Aba profissionais-atendimento está ativa, renderizando...');
+    if (tableDataResumido && tableDataResumido.length > 0) {
+      tableSearchedResumido = [...tableDataResumido];
+      currentPageResumido = 1;
+      renderTableResumido();
+    } else {
+      console.log('🔄 Construindo dados da tabela resumida...');
+      buildTableDataResumido();
+      renderTableResumido();
+    }
+  } else {
+    console.log('ℹ️ Aba profissionais-atendimento não está ativa no momento.');
+  }
+}
+
+// Executa a correção após o carregamento dos dados
+const originalOnDataLoaded = onDataLoaded;
+onDataLoaded = function() {
+  originalOnDataLoaded();
+  setTimeout(fixResumidoTab, 500);
+};
+
+// Listener para o botão da aba
+document.addEventListener('DOMContentLoaded', function() {
+  const resumidoBtn = document.querySelector('[data-tab="profissionais-atendimento"]');
+  if (resumidoBtn) {
+    resumidoBtn.addEventListener('click', function() {
+      setTimeout(function() {
+        console.log('🔄 Aba profissionais-atendimento clicada, renderizando...');
+        if (tableDataResumido && tableDataResumido.length > 0) {
+          tableSearchedResumido = [...tableDataResumido];
+          currentPageResumido = 1;
+          renderTableResumido();
+        } else {
+          buildTableDataResumido();
+          renderTableResumido();
+        }
+      }, 200);
+    });
+  }
+  
+  // Força a verificação quando a página carregar
+  setTimeout(fixResumidoTab, 1500);
+});
 
 // ============================================================
 // INICIALIZAÇÃO
