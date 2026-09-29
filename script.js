@@ -28,7 +28,6 @@ const centerTextPlugin = {
 };
 Chart.register(centerTextPlugin);
 
-
 // ============================================================
 // CONFIGURAÇÕES
 // ============================================================
@@ -56,10 +55,10 @@ const OPERADORES = {
   '532': 'Graziele Alves'
 };
 
-// ============================================================
-// MAPEAMENTO DE DISTRITOS
-// ============================================================
 const DISTRITO_MAP = {
+  // ============================================================
+  // ELDORADO
+  // ============================================================
   'UNIDADE BASICA DE SAUDE JARDIM BANDEIRANTES': 'ELDORADO',
   'UNIDADE BASICA DE SAUDE AGUA BRANCA': 'ELDORADO',
   'UNIDADE BASICA DE SAUDE XV': 'ELDORADO',
@@ -70,6 +69,10 @@ const DISTRITO_MAP = {
   'UNIDADE BASICA DE SAUDE SANTA CRUZ': 'ELDORADO',
   'UNIDADE BASICA DE SAUDE PEROBAS': 'ELDORADO',
   'UNIDADE BASICA DE SAUDE BELA VISTA': 'ELDORADO',
+
+  // ============================================================
+  // INDUSTRIAL
+  // ============================================================
   'UNIDADE BASICA DE SAUDE INDUSTRIAL III SECAO': 'INDUSTRIAL',
   'UNIDADE BASICA DE SAUDE JARDIM INDUSTRIAL': 'INDUSTRIAL',
   'UNIDADE BASICA DE SAUDE VILA SAO PAULO': 'INDUSTRIAL',
@@ -77,7 +80,12 @@ const DISTRITO_MAP = {
   'UNIDADE BASICA DE SAUDE JOAO EVANGELISTA': 'INDUSTRIAL',
   'UNIDADE BASICA DE SAUDE BANDEIRANTES': 'INDUSTRIAL',
   'UNIDADE BASICA DE SAUDE AMAZONAS': 'INDUSTRIAL',
+  'UNIDADE BASICA DE SAUDE AMAZONAS I': 'INDUSTRIAL',
   'UNIDADE BASICA DE SAUDE VILA DINIZ': 'INDUSTRIAL',
+
+  // ============================================================
+  // NACIONAL
+  // ============================================================
   'UNIDADE BASICA DE SAUDE NACIONAL': 'NACIONAL',
   'UNIDADE BASICA DE SAUDE ILDA EFIGENIA': 'NACIONAL',
   'UNIDADE BASICA DE SAUDE JOAQUIM MURTINHO': 'NACIONAL',
@@ -85,16 +93,27 @@ const DISTRITO_MAP = {
   'UNIDADE BASICA DE SAUDE AMENDOEIRAS': 'NACIONAL',
   'UNIDADE BASICA DE SAUDE ESTRELA DALVA': 'NACIONAL',
   'UNIDADE BASICA DE SAUDE TIJUCA': 'NACIONAL',
+  'UNIDADE DE SAUDE DA FAMILIA ESTRELA DALVA USF 54': 'NACIONAL',
+  'UNIDADE DE SAUDE DA FAMILIA NACIONAL II USF 23': 'NACIONAL',
+
+  // ============================================================
+  // PETROLANDIA
+  // ============================================================
   'UNIDADE BASICA DE SAUDE PETROLANDIA': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE TROPICAL II': 'PETROLANDIA',
+  'UNIDADE BASICA DE SAUDE TROPICAL I': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE SAPUCAIAS': 'PETROLANDIA',
+  'UNIDADE BASICA DE SAUDE SAPUCAIAS II': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE DUQUE DE CAXIAS': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE SAO LUIZ II': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE SAO LUIZ I': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE CAMPO ALTO': 'PETROLANDIA',
-  'UNIDADE BASICA DE SAUDE TROPICAL I': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE ESTANCIAS IMPERIAIS': 'PETROLANDIA',
   'UNIDADE BASICA DE SAUDE NASCENTES IMPERIAIS': 'PETROLANDIA',
+
+  // ============================================================
+  // RESSACA
+  // ============================================================
   'UNIDADE BASICA DE SAUDE CAMPINA VERDE': 'RESSACA',
   'UNIDADE BASICA DE SAUDE LAGUNA': 'RESSACA',
   'UNIDADE BASICA DE SAUDE ARPOADOR': 'RESSACA',
@@ -102,22 +121,34 @@ const DISTRITO_MAP = {
   'UNIDADE BASICA DE SAUDE PARQUE TURISTA': 'RESSACA',
   'UNIDADE BASICA DE SAUDE VILA PEROLA': 'RESSACA',
   'UNIDADE BASICA DE SAUDE NOVO PROGRESSO II': 'RESSACA',
+  'UNIDADE BASICA DE SAUDE NOVO PROGRESSO I': 'RESSACA',
   'UNIDADE BASICA DE SAUDE COLORADO': 'RESSACA',
   'UNIDADE BASICA DE SAUDE CANDIDA FERREIRA': 'RESSACA',
   'UNIDADE DE SAUDE DA FAMILIA VILA PEROLA II USF 84': 'RESSACA',
   'UNIDADE BASICA DE SAUDE PRESIDENTE KENNEDY': 'RESSACA',
   'UNIDADE BASICA DE SAUDE OITIS': 'RESSACA',
   'UNIDADE BASICA DE SAUDE MORADA NOVA': 'RESSACA',
+  'UNIDADE DE SAUDE DA FAMILIA JARDIM LAGUNA III USF 42': 'RESSACA',
+  'UNIDADE DE SAUDE DA FAMILIA PARQUE RECREIO USF 35': 'RESSACA',
+
+  // ============================================================
+  // RIACHO
+  // ============================================================
   'UNIDADE BASICA DE SAUDE INCONFIDENTES': 'RIACHO',
   'UNIDADE BASICA DE SAUDE RIACHO': 'RIACHO',
   'UNIDADE BASICA DE SAUDE FLAMENGO': 'RIACHO',
   'UNIDADE BASICA DE SAUDE NOVO RIACHO': 'RIACHO',
   'UNIDADE BASICA DE SAUDE DURVAL DE BARROS': 'RIACHO',
   'UNIDADE BASICA DE SAUDE MONTE CASTELO': 'RIACHO',
+
+  // ============================================================
+  // SEDE
+  // ============================================================
   'UNIDADE BASICA DE SAUDE CHACARAS': 'SEDE',
   'UNIDADE BASICA DE SAUDE CANADA': 'SEDE',
   'UNIDADE BASICA DE SAUDE CENTRO (CAD)': 'SEDE',
   'UBS BERNARDO MONTEIRO/MOACIR PINTO MOREIRA': 'SEDE',
+  'UNIDADE BASICA DE SAUDE BERNARDO MONTEIRO/MOACIR PINTO MOREIRA': 'SEDE',
   'UNIDADE BASICA DE SAUDE LINDA VISTA': 'SEDE',
   'UNIDADE BASICA DE SAUDE SANTA HELENA': 'SEDE',
   'UNIDADE BASICA DE SAUDE VILA ITALIA': 'SEDE',
@@ -126,8 +157,22 @@ const DISTRITO_MAP = {
   'UNIDADE BASICA DE SAUDE FUNCIONARIOS': 'SEDE',
   'UNIDADE BASICA DE SAUDE PRAIA': 'SEDE',
   'UBS UNIDADE XVI (SEDE)': 'SEDE',
+  'UNIDADE BASICA DE SAUDE SESC': 'SEDE',
+  'UNIDADE BASICA DE SAUDE ALVORADA': 'SEDE',
+  'UNIDADE BASICA DE SAUDE BARRAGINHA': 'SEDE',
+  'UNIDADE BASICA DE SAUDE PRESIDENTE VARGAS': 'SEDE',
+  'UNIDADE DE SAUDE DA FAMILIA FUNCIONARIOS II USF 55': 'SEDE',
+  'UNIDADE DE SAUDE DA FAMILIA SAO MATEUS USF 28': 'SEDE',
+  'UNIDADE DE SAUDE DA FAMILIA ARVOREDO USF 32': 'SEDE',
+  'UNIDADE DE SAUDE DA FAMILIA GUANABARA USF 37': 'SEDE',
+  'UNIDADE DE SAUDE DA FAMILIA MILANES USF 44': 'SEDE',
+
+  // ============================================================
+  // VARGEM DAS FLORES
+  // ============================================================
   'UNIDADE BASICA DE SAUDE VILA RENASCER': 'VARGEM DAS FLORES',
   'UNIDADE BASICA DE SAUDE NOVA CONTAGEM': 'VARGEM DAS FLORES',
+  'UNIDADE BASICA DE SAUDE NOVA CONTAGEM I': 'VARGEM DAS FLORES',
   'UNIDADE BASICA DE SAUDE VILA SOLEDADE': 'VARGEM DAS FLORES',
   'UNIDADE BASICA DE SAUDE ESTALEIRO': 'VARGEM DAS FLORES',
   'CERESP CONTAGEM': 'VARGEM DAS FLORES',
@@ -138,10 +183,14 @@ const DISTRITO_MAP = {
   'UNIDADE BASICA DE SAUDE VILA ESPERANCA': 'VARGEM DAS FLORES',
   'UNIDADE BASICA DE SAUDE DARCY RIBEIRO': 'VARGEM DAS FLORES',
   'UNIDADE BASICA DE SAUDE ICAIVERA': 'VARGEM DAS FLORES',
-  'UNIDADE BASICA DE SAUDE NOVA CONTAGEM I': 'VARGEM DAS FLORES',
   'CONTAGEM PENITENCIARIA NELSON HUNGRIA': 'VARGEM DAS FLORES',
   'UNIDADE BASICA DE SAUDE TUPA': 'VARGEM DAS FLORES',
-  'UNIDADE BASICA DE SAUDE LIBERDADE II': 'VARGEM DAS FLORES'
+  'UNIDADE BASICA DE SAUDE TUPÃƒ': 'VARGEM DAS FLORES',
+  'UNIDADE BASICA DE SAUDE LIBERDADE II': 'VARGEM DAS FLORES',
+  'UNIDADE DE SAUDE DA FAMILIA VILA SOLEDADE II USF 10': 'VARGEM DAS FLORES',
+  'UNIDADE DE SAUDE DA FAMILIA RETIRO III USF 03': 'VARGEM DAS FLORES',
+  'UNIDADE DE SAUDE DA FAMILIA SAO JUDAS TADEU I USF 04': 'VARGEM DAS FLORES',
+  'UNIDADE DE REFERENCIA A SAUDE DA FAMILIA VARGEM DAS FLORES': 'VARGEM DAS FLORES',
 };
 
 const CAE_UNITS = ['CAE IRIA DINIZ', 'CAE RESSACA', 'CEAPS'];
@@ -179,6 +228,13 @@ const PALETTE_RECEPCIONADOS = [
   '#c8f0d4', '#e8f8ec'
 ];
 
+const PALETTE_ATENDIDOS = [
+  '#0a1a2a', '#0f2840', '#143656', '#1a446c',
+  '#1f5282', '#266098', '#2e6eae', '#3a7cc4',
+  '#4a8ada', '#5a98e8', '#78a8f0', '#a0c0f5',
+  '#c8d8fa', '#e8f0fd'
+];
+
 const PALETTE_CANCELADOS = [
   '#1a0a0a', '#2d1010', '#3d1515', '#4d1a1a',
   '#6b2020', '#8a2a2a', '#a83232', '#c93d3d',
@@ -212,7 +268,6 @@ let currentPage   = 1;
 let sortColIdx    = -1;
 let sortAscFlag   = true;
 
-// Estado da tabela resumida (CONSOLIDADO PROFISSIONAIS POR ATENDIMENTO)
 let tableDataResumido = [];
 let tableSearchedResumido = [];
 let currentPageResumido = 1;
@@ -227,6 +282,7 @@ let chartSituacao, chartMeses;
 let chartAbsenteismoEsp, chartAbsenteismoDist, chartAbsenteismoMensal, chartAbsenteismoPrestador;
 let chartCancelamentosDist, chartCancelamentosEsp, chartCancelamentosPrestador, chartCancelamentosMensal;
 let chartRecepcionadosDistrito, chartRecepcionadosEspecialidade, chartRecepcionadosPrestador, chartRecepcionadosMensal;
+let chartAtendidosDistrito, chartAtendidosEspecialidade, chartAtendidosPrestador, chartAtendidosMensal;
 let chartTransferidosDistrito, chartTransferidosEspecialidade, chartTransferidosPrestador, chartTransferidosMensal;
 let chartPrimeiraConsultaDistrito, chartRetornoDistrito, chartComparativoDistrito, chartDistritoRosca;
 
@@ -305,7 +361,14 @@ function getTipoAtendimento(val) {
 }
 
 function getSituacaoLabel(val) {
-  const map = { AGE:'Agendados', CAN:'Cancelados', FAL:'Faltosos', REC:'Recepcionados', TRA:'Transferidos' };
+  const map = {
+    AGE:'Agendados',
+    CAN:'Cancelados',
+    FAL:'Faltosos',
+    REC:'Recepcionados',
+    TRA:'Transferidos',
+    ATD:'Atendidos'
+  };
   return map[(val||'').toUpperCase()] || val || '–';
 }
 
@@ -335,11 +398,11 @@ function isSameDay(d1, d2) {
 
 function compareDate(selectedDate, rowDate) {
   if (!selectedDate || !rowDate) return false;
-  const d1 = selectedDate.getFullYear() + '-' + 
-             String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + 
+  const d1 = selectedDate.getFullYear() + '-' +
+             String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' +
              String(selectedDate.getDate()).padStart(2, '0');
-  const d2 = rowDate.getFullYear() + '-' + 
-             String(rowDate.getMonth() + 1).padStart(2, '0') + '-' + 
+  const d2 = rowDate.getFullYear() + '-' +
+             String(rowDate.getMonth() + 1).padStart(2, '0') + '-' +
              String(rowDate.getDate()).padStart(2, '0');
   return d1 === d2;
 }
@@ -521,6 +584,12 @@ function renderChartsForTab(tabId) {
       renderChartRecepcionadosPrestador();
       renderChartRecepcionadosMensal();
       break;
+    case 'atendidos':
+      renderChartAtendidosDistrito();
+      renderChartAtendidosEspecialidade();
+      renderChartAtendidosPrestador();
+      renderChartAtendidosMensal();
+      break;
     case 'cancelados':
       renderChartCancelamentosDist();
       renderChartCancelamentosEsp();
@@ -546,9 +615,10 @@ function destroyAllCharts() {
     'chartAbsenteismoMensal', 'chartAbsenteismoPrestador', 'chartCancelamentosDist',
     'chartCancelamentosEsp', 'chartCancelamentosPrestador', 'chartCancelamentosMensal',
     'chartRecepcionadosDistrito', 'chartRecepcionadosEspecialidade', 'chartRecepcionadosPrestador',
-    'chartRecepcionadosMensal', 'chartTransferidosDistrito', 'chartTransferidosEspecialidade',
-    'chartTransferidosPrestador', 'chartTransferidosMensal', 'chartPrimeiraConsultaDistrito',
-    'chartRetornoDistrito', 'chartComparativoDistrito', 'chartDistritoRosca'
+    'chartRecepcionadosMensal', 'chartAtendidosDistrito', 'chartAtendidosEspecialidade',
+    'chartAtendidosPrestador', 'chartAtendidosMensal', 'chartTransferidosDistrito',
+    'chartTransferidosEspecialidade', 'chartTransferidosPrestador', 'chartTransferidosMensal',
+    'chartPrimeiraConsultaDistrito', 'chartRetornoDistrito', 'chartComparativoDistrito', 'chartDistritoRosca'
   ];
   refs.forEach(ref => {
     if (window[ref]) {
@@ -564,7 +634,7 @@ function destroyAllCharts() {
 async function loadData(forceRefresh = false) {
   const btnRefresh = document.getElementById('btnRefresh');
   const icon = document.getElementById('refreshIcon');
-  
+
   if (btnRefresh) btnRefresh.disabled = true;
   if (icon) icon.classList.add('spinning');
   showLoading(true);
@@ -602,7 +672,7 @@ async function loadData(forceRefresh = false) {
     }
   } catch (err) {
     console.error('❌ Erro ao carregar dados:', err);
-    
+
     const expiredCache = getCachedData(true);
     if (expiredCache && expiredCache.data && expiredCache.data.length > 0) {
       allData = expiredCache.data;
@@ -626,16 +696,16 @@ async function fetchFreshData() {
   try {
     const url = CSV_URL + '&t=' + Date.now();
     console.log('📡 Fazendo requisição para:', url);
-    
+
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status} - ${response.statusText}`);
     }
-    
+
     const text = await response.text();
     console.log(`📄 Resposta recebida: ${text.length} caracteres`);
-    
+
     if (!text || text.trim().length === 0) {
       throw new Error('Resposta vazia da planilha');
     }
@@ -651,7 +721,7 @@ async function fetchFreshData() {
     }
 
     return parseCSV(text);
-    
+
   } catch (err) {
     console.error('❌ Erro ao buscar dados:', err);
     throw err;
@@ -688,7 +758,7 @@ async function fetchDataInBackground() {
     if (freshData && freshData.length > 0) {
       const currentDataStr = JSON.stringify(allData);
       const newDataStr = JSON.stringify(freshData);
-      
+
       if (currentDataStr !== newDataStr) {
         console.log('🔄 Dados atualizados em segundo plano!');
         allData = freshData;
@@ -713,12 +783,12 @@ function setCachedData(data, timestamp) {
     const dataStr = JSON.stringify(data);
     const sizeInMB = (dataStr.length * 2) / (1024 * 1024);
     console.log(`📊 Tamanho dos dados: ${sizeInMB.toFixed(2)} MB`);
-    
+
     if (sizeInMB > 4) {
       console.warn('⚠️ Dados muito grandes para cache (>4MB).');
       return;
     }
-    
+
     const cacheObject = {
       data: data,
       timestamp: timestamp || new Date().toISOString()
@@ -737,30 +807,30 @@ function getCachedData(ignoreExpiry = false) {
       console.log('📭 Nenhum cache encontrado.');
       return null;
     }
-    
+
     const cacheObject = JSON.parse(cached);
-    
+
     if (!cacheObject.data || cacheObject.data.length === 0) {
       console.log('📭 Cache vazio.');
       return null;
     }
-    
+
     if (ignoreExpiry) {
       console.log(`📦 Usando cache (ignorando expiração): ${cacheObject.data.length} registros`);
       return cacheObject;
     }
-    
+
     const now = new Date();
     const cacheDate = new Date(cacheObject.timestamp);
     const hoursDiff = (now - cacheDate) / (1000 * 60 * 60);
-    
+
     console.log(`⏱️ Cache tem ${hoursDiff.toFixed(1)} horas de idade`);
-    
+
     if (hoursDiff <= 0.5) {
       console.log(`✅ Cache válido: ${cacheObject.data.length} registros`);
       return cacheObject;
     }
-    
+
     console.log('⏰ Cache expirado.');
     return null;
   } catch (e) {
@@ -777,7 +847,7 @@ function showToast(message, type = 'info') {
     warning: '#f39c12',
     error: '#e74c3c'
   };
-  
+
   toast.style.cssText = `
     position: fixed;
     bottom: 24px;
@@ -797,17 +867,17 @@ function showToast(message, type = 'info') {
     animation: slideUp 0.3s ease;
     max-width: 400px;
   `;
-  
+
   const icons = {
     info: 'ℹ️',
     success: '✅',
     warning: '⚠️',
     error: '❌'
   };
-  
+
   toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transition = 'opacity 0.3s ease';
@@ -959,7 +1029,7 @@ function applyFilters() {
     if (mesesSelecionados.length > 0 && !mesesSelecionados.includes(r.mesAgendamento)) return false;
     if (unidadesSelecionadas.length > 0 && !unidadesSelecionadas.includes(r.unidadeSolicitante)) return false;
     if (distritosSelecionados.length > 0 && !distritosSelecionados.includes(r.distrito)) return false;
-    
+
     if (dataCriacaoSelecionada) {
       if (!r.dataCriacaoParsed) return false;
       if (!compareDate(dataCriacaoSelecionada, r.dataCriacaoParsed)) return false;
@@ -984,7 +1054,7 @@ function applyFilters() {
   if (tabelaPanel && tabelaPanel.classList.contains('active')) {
     renderTable();
   }
-  
+
   const resumidoPanel = document.getElementById('tab-profissionais-atendimento');
   if (resumidoPanel && resumidoPanel.classList.contains('active')) {
     renderTableResumido();
@@ -1009,10 +1079,12 @@ function updateKPIs() {
   const fal = filteredData.filter(r => r.situacao === 'FAL').length;
   const can = filteredData.filter(r => r.situacao === 'CAN').length;
   const tra = filteredData.filter(r => r.situacao === 'TRA').length;
-  const agendados = rec + fal;
+  const atd = filteredData.filter(r => r.situacao === 'ATD').length;
+  const agendados = rec + fal + atd;
 
   animateCount('kpiAgendados', agendados);
   animateCount('kpiRecepcionados', rec);
+  animateCount('kpiAtendidos', atd);
   animateCount('kpiFaltosos', fal);
   animateCount('kpiCancelados', can);
   animateCount('kpiTransferidos', tra);
@@ -1051,7 +1123,7 @@ function sortedEntries(obj, limit = 0) {
 function destroyChart(ref) { if (ref) { try { ref.destroy(); } catch(e) {} } }
 
 // ============================================================
-// TODOS OS GRÁFICOS (MANTIDOS IGUAIS)
+// GRÁFICOS - VISÃO GERAL
 // ============================================================
 
 function renderChartDistrito() {
@@ -1063,7 +1135,7 @@ function renderChartDistrito() {
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
   const colors = labels.map((_, i) => PALETTE_AZUL[i % PALETTE_AZUL.length]);
-  
+
   destroyChart(chartDistrito);
   chartDistrito = new Chart(ctx, {
     type: 'bar',
@@ -1121,7 +1193,7 @@ function renderChartTipoAtendimento() {
   if (!ctx) return;
   const pc = filteredData.filter(r => r.tipoAtendimento === 'Primeira Consulta').length;
   const ret = filteredData.filter(r => r.tipoAtendimento === 'Retorno').length;
-  
+
   destroyChart(chartTipoAtendimento);
   chartTipoAtendimento = new Chart(ctx, {
     type: 'bar',
@@ -1174,7 +1246,7 @@ function renderChartEspecialidade() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const colors = labels.map((_, i) => PALETTE_AZUL[i % PALETTE_AZUL.length]);
-  
+
   destroyChart(chartEspecialidade);
   chartEspecialidade = new Chart(ctx, {
     type: 'bar',
@@ -1236,7 +1308,7 @@ function renderChartPrestador() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const colors = labels.map((_, i) => PALETTE_AZUL[(i+3) % PALETTE_AZUL.length]);
-  
+
   destroyChart(chartPrestador);
   chartPrestador = new Chart(ctx, {
     type: 'bar',
@@ -1295,14 +1367,15 @@ function renderChartSituacao() {
   if (!ctx) return;
   const age = filteredData.filter(r => r.situacao === 'AGE').length;
   const rec = filteredData.filter(r => r.situacao === 'REC').length;
+  const atd = filteredData.filter(r => r.situacao === 'ATD').length;
   const fal = filteredData.filter(r => r.situacao === 'FAL').length;
   const can = filteredData.filter(r => r.situacao === 'CAN').length;
   const tra = filteredData.filter(r => r.situacao === 'TRA').length;
-  const labels = ['Agendados', 'Recepcionados', 'Faltosos', 'Cancelados', 'Transferidos'];
-  const data = [age, rec, fal, can, tra];
+  const labels = ['Agendados', 'Recepcionados', 'Atendidos', 'Faltosos', 'Cancelados', 'Transferidos'];
+  const data = [age, rec, atd, fal, can, tra];
   const total = data.reduce((a,b) => a+b, 0);
-  const coresAzul = ['#0a1628', '#1a3256', '#2d5494', '#4a90d9', '#6aaff0'];
-  
+  const coresAzul = ['#0a1628', '#1a3256', '#2d5494', '#4a90d9', '#6aaff0', '#8fc7f5'];
+
   destroyChart(chartSituacao);
   chartSituacao = new Chart(ctx, {
     type: 'bar',
@@ -1368,7 +1441,7 @@ function renderChartMeses() {
     '#1e3a5f', '#254a7a', '#2d5494', '#3a6bb0',
     '#4a90d9', '#6aaff0', '#8fc7f5', '#b5dffa'
   ];
-  
+
   destroyChart(chartMeses);
   chartMeses = new Chart(ctx, {
     type: 'doughnut',
@@ -1434,7 +1507,7 @@ function renderChartPrimeiraConsultaDistrito() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const colors = labels.map((_, i) => PALETTE_ROSA[i % PALETTE_ROSA.length]);
-  
+
   destroyChart(chartPrimeiraConsultaDistrito);
   chartPrimeiraConsultaDistrito = new Chart(ctx, {
     type: 'bar',
@@ -1488,7 +1561,7 @@ function renderChartRetornoDistrito() {
   const labels = entries.map(e => e[0]);
   const data = entries.map(e => e[1]);
   const colors = labels.map((_, i) => PALETTE_ROSA[(i+3) % PALETTE_ROSA.length]);
-  
+
   destroyChart(chartRetornoDistrito);
   chartRetornoDistrito = new Chart(ctx, {
     type: 'bar',
@@ -1539,7 +1612,7 @@ function renderChartComparativoDistrito() {
   const distritos = [...new Set(filteredData.map(r => r.distrito).filter(Boolean))].sort();
   const pcCounts = distritos.map(d => filteredData.filter(r => r.distrito === d && r.tipoAtendimento === 'Primeira Consulta').length);
   const retCounts = distritos.map(d => filteredData.filter(r => r.distrito === d && r.tipoAtendimento === 'Retorno').length);
-  
+
   destroyChart(chartComparativoDistrito);
   chartComparativoDistrito = new Chart(ctx, {
     type: 'bar',
@@ -1610,7 +1683,7 @@ function renderChartDistritoRosca() {
   const data = entries.map(e => e[1]);
   const total = data.reduce((a,b) => a+b, 0);
   const colors = labels.map((_, i) => PALETTE_ROSA[i % PALETTE_ROSA.length]);
-  
+
   destroyChart(chartDistritoRosca);
   chartDistritoRosca = new Chart(ctx, {
     type: 'doughnut',
@@ -1669,14 +1742,15 @@ function renderChartAbsenteismoEsp() {
   const map = {};
   filteredData.forEach(r => {
     const key = r.cbo || '–';
-    if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0 };
+    if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0, atd: 0 };
     if (r.situacao === 'FAL') map[key].fal++;
     else if (r.situacao === 'REC') map[key].rec++;
     else if (r.situacao === 'CAN') map[key].can++;
+    else if (r.situacao === 'ATD') map[key].atd++;
   });
   const entries = Object.entries(map)
-    .filter(([,v]) => (v.rec + v.fal + v.can) > 0)
-    .map(([k,v]) => ({ label: k, pct: parseFloat((v.fal / (v.rec + v.fal + v.can) * 100).toFixed(1)), fal: v.fal, total: v.rec + v.fal + v.can }))
+    .filter(([,v]) => (v.rec + v.fal + v.can + v.atd) > 0)
+    .map(([k,v]) => ({ label: k, pct: parseFloat((v.fal / (v.rec + v.fal + v.can + v.atd) * 100).toFixed(1)), fal: v.fal, total: v.rec + v.fal + v.can + v.atd }))
     .sort((a,b) => b.pct - a.pct).slice(0, 15);
   const labels = entries.map(e => e.label);
   const data = entries.map(e => e.pct);
@@ -1708,14 +1782,15 @@ function renderChartAbsenteismoDist() {
   const map = {};
   filteredData.forEach(r => {
     const key = r.distrito || 'OUTROS';
-    if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0 };
+    if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0, atd: 0 };
     if (r.situacao === 'FAL') map[key].fal++;
     else if (r.situacao === 'REC') map[key].rec++;
     else if (r.situacao === 'CAN') map[key].can++;
+    else if (r.situacao === 'ATD') map[key].atd++;
   });
   const entries = Object.entries(map)
-    .filter(([,v]) => (v.rec + v.fal + v.can) > 0)
-    .map(([k,v]) => ({ label: k, pct: parseFloat((v.fal / (v.rec + v.fal + v.can) * 100).toFixed(1)), fal: v.fal, total: v.rec + v.fal + v.can }))
+    .filter(([,v]) => (v.rec + v.fal + v.can + v.atd) > 0)
+    .map(([k,v]) => ({ label: k, pct: parseFloat((v.fal / (v.rec + v.fal + v.can + v.atd) * 100).toFixed(1)), fal: v.fal, total: v.rec + v.fal + v.can + v.atd }))
     .sort((a,b) => b.pct - a.pct);
   const labels = entries.map(e => e.label);
   const data = entries.map(e => e.pct);
@@ -1783,14 +1858,15 @@ function renderChartAbsenteismoPrestador() {
   const map = {};
   filteredData.forEach(r => {
     const key = r.unidadeExecutante || '–';
-    if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0 };
+    if (!map[key]) map[key] = { fal: 0, rec: 0, can: 0, atd: 0 };
     if (r.situacao === 'FAL') map[key].fal++;
     else if (r.situacao === 'REC') map[key].rec++;
     else if (r.situacao === 'CAN') map[key].can++;
+    else if (r.situacao === 'ATD') map[key].atd++;
   });
   const entries = Object.entries(map)
-    .filter(([,v]) => (v.rec + v.fal + v.can) > 0)
-    .map(([k,v]) => ({ label: k, pct: parseFloat((v.fal / (v.rec + v.fal + v.can) * 100).toFixed(1)), fal: v.fal, total: v.rec + v.fal + v.can }))
+    .filter(([,v]) => (v.rec + v.fal + v.can + v.atd) > 0)
+    .map(([k,v]) => ({ label: k, pct: parseFloat((v.fal / (v.rec + v.fal + v.can + v.atd) * 100).toFixed(1)), fal: v.fal, total: v.rec + v.fal + v.can + v.atd }))
     .sort((a,b) => b.pct - a.pct).slice(0, 10);
   const labels = entries.map(e => e.label);
   const data = entries.map(e => e.pct);
@@ -1806,6 +1882,202 @@ function renderChartAbsenteismoPrestador() {
         y: { ticks: { font: { family: 'Inter', size: 10 }, color: '#3d5166' }, grid: { display: false } },
         x: { beginAtZero: true, max: 100, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6', callback: v => v + '%' }, grid: { display: false } }
       }
+    }
+  });
+}
+
+// ============================================================
+// GRÁFICOS - RECEPCIONADOS
+// ============================================================
+
+function renderChartRecepcionadosDistrito() {
+  const ctx = document.getElementById('chartRecepcionadosDistrito')?.getContext('2d');
+  if (!ctx) return;
+  const recData = filteredData.filter(r => r.situacao === 'REC');
+  const counts = countBy(recData, r => r.distrito);
+  const entries = sortedEntries(counts);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  destroyChart(chartRecepcionadosDistrito);
+  chartRecepcionadosDistrito = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'bb'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' } },
+      scales: { x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+function renderChartRecepcionadosEspecialidade() {
+  const ctx = document.getElementById('chartRecepcionadosEspecialidade')?.getContext('2d');
+  if (!ctx) return;
+  const recData = filteredData.filter(r => r.situacao === 'REC');
+  const counts = countBy(recData, r => r.cbo);
+  const entries = sortedEntries(counts, 15);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  destroyChart(chartRecepcionadosEspecialidade);
+  chartRecepcionadosEspecialidade = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'dd'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
+      layout: { padding: { right: 54 } },
+      scales: { y: { ticks: { font: { family: 'Inter', size: 10 }, color: '#3d5166' }, grid: { display: false } }, x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+function renderChartRecepcionadosPrestador() {
+  const ctx = document.getElementById('chartRecepcionadosPrestador')?.getContext('2d');
+  if (!ctx) return;
+  const recData = filteredData.filter(r => r.situacao === 'REC');
+  const counts = countBy(recData, r => r.unidadeExecutante);
+  const entries = sortedEntries(counts, 10);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  destroyChart(chartRecepcionadosPrestador);
+  chartRecepcionadosPrestador = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'dd'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
+      layout: { padding: { right: 54 } },
+      scales: { y: { ticks: { font: { family: 'Inter', size: 9 }, color: '#3d5166' }, grid: { display: false } }, x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+function renderChartRecepcionadosMensal() {
+  const ctx = document.getElementById('chartRecepcionadosMensal')?.getContext('2d');
+  if (!ctx) return;
+  const map = {};
+  filteredData.forEach(r => {
+    const key = r.mesAgendamento || '–';
+    if (!map[key]) map[key] = 0;
+    if (r.situacao === 'REC') map[key]++;
+  });
+  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sortedKeys = Object.keys(map).sort((a, b) => {
+    const [mesA, anoA] = a.split('/');
+    const [mesB, anoB] = b.split('/');
+    const indexMesA = mesesOrdenados.indexOf(mesA);
+    const indexMesB = mesesOrdenados.indexOf(mesB);
+    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
+    return indexMesA - indexMesB;
+  });
+  const labels = sortedKeys;
+  const data = sortedKeys.map(k => map[k]);
+  destroyChart(chartRecepcionadosMensal);
+  chartRecepcionadosMensal = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Recepcionados', data, borderColor: '#27ae60', backgroundColor: 'rgba(39,174,96,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#27ae60', tension: 0.4, fill: true }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${fmt(ctx.raw)} recepcionados` } }, datalabels: { anchor: 'end', align: 'end', color: '#27ae60', font: { family: 'Inter', size: 11, weight: 'bold' }, formatter: val => fmt(val) } },
+      scales: { x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+// ============================================================
+// GRÁFICOS - ATENDIDOS
+// ============================================================
+
+function renderChartAtendidosDistrito() {
+  const ctx = document.getElementById('chartAtendidosDistrito')?.getContext('2d');
+  if (!ctx) return;
+  const atdData = filteredData.filter(r => r.situacao === 'ATD');
+  const counts = countBy(atdData, r => r.distrito);
+  const entries = sortedEntries(counts);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  destroyChart(chartAtendidosDistrito);
+  chartAtendidosDistrito = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Atendidos', data, backgroundColor: PALETTE_ATENDIDOS.map(c => c + 'bb'), borderColor: PALETTE_ATENDIDOS, borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' } },
+      scales: { x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+function renderChartAtendidosEspecialidade() {
+  const ctx = document.getElementById('chartAtendidosEspecialidade')?.getContext('2d');
+  if (!ctx) return;
+  const atdData = filteredData.filter(r => r.situacao === 'ATD');
+  const counts = countBy(atdData, r => r.cbo);
+  const entries = sortedEntries(counts, 15);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  destroyChart(chartAtendidosEspecialidade);
+  chartAtendidosEspecialidade = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Atendidos', data, backgroundColor: PALETTE_ATENDIDOS.map(c => c + 'dd'), borderColor: PALETTE_ATENDIDOS, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
+      layout: { padding: { right: 54 } },
+      scales: { y: { ticks: { font: { family: 'Inter', size: 10 }, color: '#3d5166' }, grid: { display: false } }, x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+function renderChartAtendidosPrestador() {
+  const ctx = document.getElementById('chartAtendidosPrestador')?.getContext('2d');
+  if (!ctx) return;
+  const atdData = filteredData.filter(r => r.situacao === 'ATD');
+  const counts = countBy(atdData, r => r.unidadeExecutante);
+  const entries = sortedEntries(counts, 10);
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+  destroyChart(chartAtendidosPrestador);
+  chartAtendidosPrestador = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Atendidos', data, backgroundColor: PALETTE_ATENDIDOS.map(c => c + 'dd'), borderColor: PALETTE_ATENDIDOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
+      layout: { padding: { right: 54 } },
+      scales: { y: { ticks: { font: { family: 'Inter', size: 9 }, color: '#3d5166' }, grid: { display: false } }, x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
+    }
+  });
+}
+
+function renderChartAtendidosMensal() {
+  const ctx = document.getElementById('chartAtendidosMensal')?.getContext('2d');
+  if (!ctx) return;
+  const map = {};
+  filteredData.forEach(r => {
+    const key = r.mesAgendamento || '–';
+    if (!map[key]) map[key] = 0;
+    if (r.situacao === 'ATD') map[key]++;
+  });
+  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sortedKeys = Object.keys(map).sort((a, b) => {
+    const [mesA, anoA] = a.split('/');
+    const [mesB, anoB] = b.split('/');
+    const indexMesA = mesesOrdenados.indexOf(mesA);
+    const indexMesB = mesesOrdenados.indexOf(mesB);
+    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
+    return indexMesA - indexMesB;
+  });
+  const labels = sortedKeys;
+  const data = sortedKeys.map(k => map[k]);
+  destroyChart(chartAtendidosMensal);
+  chartAtendidosMensal = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Atendidos', data, borderColor: '#2980b9', backgroundColor: 'rgba(41,128,185,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#2980b9', tension: 0.4, fill: true }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${fmt(ctx.raw)} atendidos` } }, datalabels: { anchor: 'end', align: 'end', color: '#2980b9', font: { family: 'Inter', size: 11, weight: 'bold' }, formatter: val => fmt(val) } },
+      scales: { x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
     }
   });
 }
@@ -1926,104 +2198,6 @@ function renderChartCancelamentosMensal() {
 }
 
 // ============================================================
-// GRÁFICOS - RECEPCIONADOS
-// ============================================================
-
-function renderChartRecepcionadosDistrito() {
-  const ctx = document.getElementById('chartRecepcionadosDistrito')?.getContext('2d');
-  if (!ctx) return;
-  const recData = filteredData.filter(r => r.situacao === 'REC');
-  const counts = countBy(recData, r => r.distrito);
-  const entries = sortedEntries(counts);
-  const labels = entries.map(e => e[0]);
-  const data = entries.map(e => e[1]);
-  destroyChart(chartRecepcionadosDistrito);
-  chartRecepcionadosDistrito = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'bb'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 8, borderSkipped: false }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'center', align: 'center', color: '#fff', font: { family: 'Inter', size: 13, weight: 'bold' }, formatter: val => val > 0 ? fmt(val) : '' } },
-      scales: { x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
-    }
-  });
-}
-
-function renderChartRecepcionadosEspecialidade() {
-  const ctx = document.getElementById('chartRecepcionadosEspecialidade')?.getContext('2d');
-  if (!ctx) return;
-  const recData = filteredData.filter(r => r.situacao === 'REC');
-  const counts = countBy(recData, r => r.cbo);
-  const entries = sortedEntries(counts, 15);
-  const labels = entries.map(e => e[0]);
-  const data = entries.map(e => e[1]);
-  destroyChart(chartRecepcionadosEspecialidade);
-  chartRecepcionadosEspecialidade = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'dd'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 5, borderSkipped: false }] },
-    options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
-      layout: { padding: { right: 54 } },
-      scales: { y: { ticks: { font: { family: 'Inter', size: 10 }, color: '#3d5166' }, grid: { display: false } }, x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
-    }
-  });
-}
-
-function renderChartRecepcionadosPrestador() {
-  const ctx = document.getElementById('chartRecepcionadosPrestador')?.getContext('2d');
-  if (!ctx) return;
-  const recData = filteredData.filter(r => r.situacao === 'REC');
-  const counts = countBy(recData, r => r.unidadeExecutante);
-  const entries = sortedEntries(counts, 10);
-  const labels = entries.map(e => e[0]);
-  const data = entries.map(e => e[1]);
-  destroyChart(chartRecepcionadosPrestador);
-  chartRecepcionadosPrestador = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, backgroundColor: PALETTE_RECEPCIONADOS.map(c => c + 'dd'), borderColor: PALETTE_RECEPCIONADOS, borderWidth: 2, borderRadius: 6, borderSkipped: false }] },
-    options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: { legend: { display: false }, tooltip: TOOLTIP_BASE, datalabels: { anchor: 'end', align: 'end', color: '#3d5166', font: { family: 'Inter', size: 13, weight: '800' }, formatter: val => fmt(val) } },
-      layout: { padding: { right: 54 } },
-      scales: { y: { ticks: { font: { family: 'Inter', size: 9 }, color: '#3d5166' }, grid: { display: false } }, x: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
-    }
-  });
-}
-
-function renderChartRecepcionadosMensal() {
-  const ctx = document.getElementById('chartRecepcionadosMensal')?.getContext('2d');
-  if (!ctx) return;
-  const map = {};
-  filteredData.forEach(r => {
-    const key = r.mesAgendamento || '–';
-    if (!map[key]) map[key] = 0;
-    if (r.situacao === 'REC') map[key]++;
-  });
-  const mesesOrdenados = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  const sortedKeys = Object.keys(map).sort((a, b) => {
-    const [mesA, anoA] = a.split('/');
-    const [mesB, anoB] = b.split('/');
-    const indexMesA = mesesOrdenados.indexOf(mesA);
-    const indexMesB = mesesOrdenados.indexOf(mesB);
-    if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
-    return indexMesA - indexMesB;
-  });
-  const labels = sortedKeys;
-  const data = sortedKeys.map(k => map[k]);
-  destroyChart(chartRecepcionadosMensal);
-  chartRecepcionadosMensal = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [{ label: 'Recepcionados', data, borderColor: '#27ae60', backgroundColor: 'rgba(39,174,96,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#27ae60', tension: 0.4, fill: true }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { ...TOOLTIP_BASE, callbacks: { label: ctx => ` ${fmt(ctx.raw)} recepcionados` } }, datalabels: { anchor: 'end', align: 'end', color: '#27ae60', font: { family: 'Inter', size: 11, weight: 'bold' }, formatter: val => fmt(val) } },
-      scales: { x: { ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#3d5166', maxRotation: 30 }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { family: 'Inter', size: 10 }, color: '#7a8fa6' }, grid: { display: false } } }
-    }
-  });
-}
-
-// ============================================================
 // GRÁFICOS - TRANSFERIDOS
 // ============================================================
 
@@ -2122,7 +2296,7 @@ function renderChartTransferidosMensal() {
 }
 
 // ============================================================
-// TABELA CONSOLIDADA (ORIGINAL)
+// TABELA CONSOLIDADA (COM ATD)
 // ============================================================
 function buildTableData() {
   const map = {};
@@ -2133,18 +2307,19 @@ function buildTableData() {
         distrito: r.distrito, unidadeSolicitante: r.unidadeSolicitante,
         tipoServico: r.tipoAtendimento, cbo: r.cbo,
         profissional: r.profissional, unidadeExecutante: r.unidadeExecutante,
-        age: 0, rec: 0, fal: 0, can: 0, tra: 0,
+        age: 0, rec: 0, atd: 0, fal: 0, can: 0, tra: 0,
       };
     }
     const sit = r.situacao;
     if (sit === 'AGE') map[key].age++;
     else if (sit === 'REC') map[key].rec++;
+    else if (sit === 'ATD') map[key].atd++;
     else if (sit === 'FAL') map[key].fal++;
     else if (sit === 'CAN') map[key].can++;
     else if (sit === 'TRA') map[key].tra++;
   });
   tableData = Object.values(map).map(r => {
-    const totalAgendamentos = r.rec + r.fal;
+    const totalAgendamentos = r.rec + r.fal + r.atd;
     const pctAbsenteismo = totalAgendamentos > 0 ? parseFloat((r.fal / totalAgendamentos * 100).toFixed(1)) : 0;
     return { ...r, totalAgendamentos, pctAbsenteismo };
   }).sort((a,b) => b.totalAgendamentos - a.totalAgendamentos);
@@ -2168,7 +2343,7 @@ function filterTable() {
 function sortTable(col) {
   if (sortColIdx === col) sortAscFlag = !sortAscFlag;
   else { sortColIdx = col; sortAscFlag = true; }
-  const keys = ['distrito','unidadeSolicitante','tipoServico','cbo','profissional','unidadeExecutante','age','rec','fal','can','tra','totalAgendamentos','pctAbsenteismo'];
+  const keys = ['distrito','unidadeSolicitante','tipoServico','cbo','profissional','unidadeExecutante','age','rec','atd','fal','can','tra','totalAgendamentos','pctAbsenteismo'];
   const key = keys[col];
   tableSearched.sort((a,b) => {
     const va = a[key] ?? '';
@@ -2196,7 +2371,7 @@ function renderTable() {
   const tfoot = document.getElementById('tableFoot');
   if (!tbody) return;
   if (slice.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="13" class="empty-msg">Nenhum registro encontrado.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="14" class="empty-msg">Nenhum registro encontrado.</td></tr>';
     tfoot.innerHTML = '';
   } else {
     tbody.innerHTML = slice.map(r => `
@@ -2209,6 +2384,7 @@ function renderTable() {
         <td style="font-size:0.78rem;color:#3d5166;">${r.unidadeExecutante || '–'}</td>
         <td class="text-center"><span class="badge-num badge-age">${fmt(r.age)}</span></td>
         <td class="text-center"><span class="badge-num badge-rec">${fmt(r.rec)}</span></td>
+        <td class="text-center"><span class="badge-num badge-atd">${fmt(r.atd)}</span></td>
         <td class="text-center"><span class="badge-num badge-fal">${fmt(r.fal)}</span></td>
         <td class="text-center"><span class="badge-num badge-can">${fmt(r.can)}</span></td>
         <td class="text-center"><span class="badge-num badge-tra">${fmt(r.tra)}</span></td>
@@ -2218,6 +2394,7 @@ function renderTable() {
     `).join('');
     const sAge = tableSearched.reduce((s,r) => s + r.age, 0);
     const sRec = tableSearched.reduce((s,r) => s + r.rec, 0);
+    const sAtd = tableSearched.reduce((s,r) => s + r.atd, 0);
     const sFal = tableSearched.reduce((s,r) => s + r.fal, 0);
     const sCan = tableSearched.reduce((s,r) => s + r.can, 0);
     const sTra = tableSearched.reduce((s,r) => s + r.tra, 0);
@@ -2228,6 +2405,7 @@ function renderTable() {
         <td colspan="6"><i class="fas fa-calculator" style="margin-right:6px;"></i>TOTAL GERAL (${fmt(tableSearched.length)} linhas)</td>
         <td class="text-center">${fmt(sAge)}</td>
         <td class="text-center">${fmt(sRec)}</td>
+        <td class="text-center">${fmt(sAtd)}</td>
         <td class="text-center">${fmt(sFal)}</td>
         <td class="text-center">${fmt(sCan)}</td>
         <td class="text-center">${fmt(sTra)}</td>
@@ -2271,22 +2449,21 @@ function goPage(p) {
 }
 
 // ============================================================
-// TABELA CONSOLIDADO PROFISSIONAIS POR ATENDIMENTO (SEM DISTRITO)
+// TABELA CONSOLIDADO PROFISSIONAIS POR ATENDIMENTO (SEM DISTRITO - COM ATD)
 // ============================================================
 
 function buildTableDataResumido() {
   console.log('🔄 Construindo tabela consolidado profissionais...');
   const map = {};
-  
+
   if (!filteredData || filteredData.length === 0) {
     console.warn('⚠️ Nenhum dado filtrado para construir a tabela.');
     tableDataResumido = [];
     tableSearchedResumido = [];
     return;
   }
-  
+
   filteredData.forEach(r => {
-    // Agrupa SEM Distrito: Unidade Executante + Tipo Serviço + CBO + Profissional
     const key = `${r.unidadeExecutante}|||${r.tipoAtendimento}|||${r.cbo}|||${r.profissional}`;
     if (!map[key]) {
       map[key] = {
@@ -2294,54 +2471,54 @@ function buildTableDataResumido() {
         tipoServico: r.tipoAtendimento || 'NÃO INFORMADO',
         cbo: r.cbo || 'NÃO INFORMADO',
         profissional: r.profissional || 'NÃO INFORMADO',
-        age: 0, rec: 0, fal: 0, can: 0, tra: 0,
+        age: 0, rec: 0, atd: 0, fal: 0, can: 0, tra: 0,
       };
     }
     const sit = r.situacao;
     if (sit === 'AGE') map[key].age++;
     else if (sit === 'REC') map[key].rec++;
+    else if (sit === 'ATD') map[key].atd++;
     else if (sit === 'FAL') map[key].fal++;
     else if (sit === 'CAN') map[key].can++;
     else if (sit === 'TRA') map[key].tra++;
   });
-  
+
   tableDataResumido = Object.values(map).map(r => {
-    const totalAgendamentos = r.rec + r.fal;
+    const totalAgendamentos = r.rec + r.fal + r.atd;
     const pctAbsenteismo = totalAgendamentos > 0 ? parseFloat((r.fal / totalAgendamentos * 100).toFixed(1)) : 0;
     return { ...r, totalAgendamentos, pctAbsenteismo };
   }).sort((a,b) => b.totalAgendamentos - a.totalAgendamentos);
-  
+
   tableSearchedResumido = [...tableDataResumido];
   console.log(`✅ ${tableDataResumido.length} registros na tabela consolidado profissionais`);
 }
 
 function renderTableResumido() {
   console.log('🔄 Renderizando tabela consolidado profissionais...');
-  
+
   const tbody = document.getElementById('tableBodyResumido');
   const tfoot = document.getElementById('tableFootResumido');
-  
+
   if (!tbody) {
     console.error('❌ Elemento tableBodyResumido não encontrado!');
     return;
   }
-  
+
   if (!tableSearchedResumido || tableSearchedResumido.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" class="empty-msg">Nenhum registro encontrado.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" class="empty-msg">Nenhum registro encontrado.</td></tr>';
     if (tfoot) tfoot.innerHTML = '';
     const infoEl = document.getElementById('tablePaginationInfoResumido');
     if (infoEl) infoEl.textContent = 'Mostrando 0 registros';
     return;
   }
-  
-  // PADRÃO 25 REGISTROS (como você disse que funciona)
-  const pageSize = parseInt(document.getElementById('tablePageSizeResumido')?.value || 25);
+
+  const pageSize = parseInt(document.getElementById('tablePageSizeResumido')?.value || 15);
   const total = tableSearchedResumido.length;
   const pages = Math.max(1, Math.ceil(total / pageSize));
   if (currentPageResumido > pages) currentPageResumido = pages;
   const start = (currentPageResumido - 1) * pageSize;
   const slice = tableSearchedResumido.slice(start, start + pageSize);
-  
+
   tbody.innerHTML = slice.map(r => `
     <tr>
       <td style="font-size:0.78rem;color:#3d5166;">${r.unidadeExecutante || '–'}</td>
@@ -2350,6 +2527,7 @@ function renderTableResumido() {
       <td style="font-size:0.78rem;color:#3d5166;">${r.profissional || '–'}</td>
       <td class="text-center"><span class="badge-num badge-age">${fmt(r.age)}</span></td>
       <td class="text-center"><span class="badge-num badge-rec">${fmt(r.rec)}</span></td>
+      <td class="text-center"><span class="badge-num badge-atd">${fmt(r.atd)}</span></td>
       <td class="text-center"><span class="badge-num badge-fal">${fmt(r.fal)}</span></td>
       <td class="text-center"><span class="badge-num badge-can">${fmt(r.can)}</span></td>
       <td class="text-center"><span class="badge-num badge-tra">${fmt(r.tra)}</span></td>
@@ -2357,21 +2535,23 @@ function renderTableResumido() {
       <td class="text-center"><span class="${absentClass(r.pctAbsenteismo)}">${r.pctAbsenteismo.toFixed(1)}%</span></td>
     </tr>
   `).join('');
-  
+
   if (tfoot) {
     const sAge = tableSearchedResumido.reduce((s,r) => s + r.age, 0);
     const sRec = tableSearchedResumido.reduce((s,r) => s + r.rec, 0);
+    const sAtd = tableSearchedResumido.reduce((s,r) => s + r.atd, 0);
     const sFal = tableSearchedResumido.reduce((s,r) => s + r.fal, 0);
     const sCan = tableSearchedResumido.reduce((s,r) => s + r.can, 0);
     const sTra = tableSearchedResumido.reduce((s,r) => s + r.tra, 0);
     const sTotal = tableSearchedResumido.reduce((s,r) => s + r.totalAgendamentos, 0);
     const pctGeral = sTotal > 0 ? parseFloat((sFal / sTotal * 100).toFixed(1)) : 0;
-    
+
     tfoot.innerHTML = `
       <tr>
         <td colspan="4"><i class="fas fa-calculator" style="margin-right:6px;"></i>TOTAL GERAL (${fmt(tableSearchedResumido.length)} linhas)</td>
         <td class="text-center">${fmt(sAge)}</td>
         <td class="text-center">${fmt(sRec)}</td>
+        <td class="text-center">${fmt(sAtd)}</td>
         <td class="text-center">${fmt(sFal)}</td>
         <td class="text-center">${fmt(sCan)}</td>
         <td class="text-center">${fmt(sTra)}</td>
@@ -2380,7 +2560,7 @@ function renderTableResumido() {
       </tr>
     `;
   }
-  
+
   const infoEl = document.getElementById('tablePaginationInfoResumido');
   if (infoEl) {
     infoEl.textContent = `Mostrando ${total === 0 ? 0 : start+1} a ${Math.min(start+pageSize, total)} de ${fmt(total)} registros`;
@@ -2403,8 +2583,8 @@ function filterTableResumido() {
 function sortTableResumido(col) {
   if (sortColIdxResumido === col) sortAscFlagResumido = !sortAscFlagResumido;
   else { sortColIdxResumido = col; sortAscFlagResumido = true; }
-  const keys = ['unidadeExecutante','tipoServico','cbo','profissional','age','rec','fal','can','tra','totalAgendamentos','pctAbsenteismo'];
-  const key = keys[col - 1]; // Ajuste porque removemos a coluna Distrito
+  const keys = ['unidadeExecutante','tipoServico','cbo','profissional','age','rec','atd','fal','can','tra','totalAgendamentos','pctAbsenteismo'];
+  const key = keys[col - 1];
   if (!key) return;
   tableSearchedResumido.sort((a,b) => {
     const va = a[key] ?? '';
@@ -2438,7 +2618,7 @@ function renderPaginationResumido(cur, total) {
 }
 
 function goPageResumido(p) {
-  const pageSize = parseInt(document.getElementById('tablePageSizeResumido')?.value || 25);
+  const pageSize = parseInt(document.getElementById('tablePageSizeResumido')?.value || 15);
   const pages = Math.max(1, Math.ceil(tableSearchedResumido.length / pageSize));
   if (p < 1 || p > pages) return;
   currentPageResumido = p;
@@ -2478,10 +2658,11 @@ function exportExcel() {
         'Unidade Executante': r.unidadeExecutante,
         'AGE': r.age,
         'REC (Recepcionados)': r.rec,
+        'ATD (Atendidos)': r.atd,
         'FAL (Faltosos)': r.fal,
         'CAN (Cancelados)': r.can,
         'TRA (Transferidos)': r.tra,
-        'Total Agendamentos (REC+FAL)': r.totalAgendamentos,
+        'Total Agendamentos (REC+FAL+ATD)': r.totalAgendamentos,
         '% Absenteísmo': r.pctAbsenteismo + '%',
       }));
       const wb = XLSX.utils.book_new();
@@ -2559,10 +2740,9 @@ function initDatePickers() {
 // ============================================================
 // FORÇAR RENDERIZAÇÃO DA TABELA CONSOLIDADO PROFISSIONAIS
 // ============================================================
-
 function fixResumidoTab() {
   console.log('🔧 Aplicando correção da aba resumida...');
-  
+
   const resumidoPanel = document.getElementById('tab-profissionais-atendimento');
   if (resumidoPanel && resumidoPanel.classList.contains('active')) {
     console.log('✅ Aba profissionais-atendimento está ativa, renderizando...');
@@ -2580,14 +2760,12 @@ function fixResumidoTab() {
   }
 }
 
-// Executa a correção após o carregamento dos dados
 const originalOnDataLoaded = onDataLoaded;
 onDataLoaded = function() {
   originalOnDataLoaded();
   setTimeout(fixResumidoTab, 500);
 };
 
-// Listener para o botão da aba
 document.addEventListener('DOMContentLoaded', function() {
   const resumidoBtn = document.querySelector('[data-tab="profissionais-atendimento"]');
   if (resumidoBtn) {
@@ -2605,8 +2783,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 200);
     });
   }
-  
-  // Força a verificação quando a página carregar
+
   setTimeout(fixResumidoTab, 1500);
 });
 
