@@ -482,13 +482,25 @@ body {
 .kpi-transferido  .kpi-icon { background: rgba(125,60,152,0.12); color: #7d3c98; }
 .kpi-info { min-width: 0; flex: 1; }
 .kpi-label {
-  font-size: 0.68rem; font-weight: 700; color: var(--text-light);
-  text-transform: uppercase; letter-spacing: 0.05em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.25;
+  min-height: 2.5em;
+  display: flex;
+  align-items: center;
 }
 .kpi-value {
-  font-size: 1.6rem; font-weight: 800; color: var(--text-dark);
-  line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ============================================================
